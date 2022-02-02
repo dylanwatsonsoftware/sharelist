@@ -1,13 +1,12 @@
 import { firestore } from './firestore';
 
-const productCollection = firestore().collection('products');
+const listCollection = firestore().collection('lists');
 
-const roleCollection = firestore().collection('roles');
-const companyCollection = firestore().collection('companies');
+const usersCollection = firestore().collection('users');
 
-const productsByRole = (roleId: string) => {
-  if (!roleId) return;
-  return productCollection.where('roles', 'array-contains', roleId);
+const listsByUser = (userId: string) => {
+  if (!userId) return;
+  return listCollection.where('userId', '==', userId);
 };
 
-export { productCollection, roleCollection, companyCollection, productsByRole };
+export { listCollection, usersCollection, listsByUser };
