@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "projects": {
+    "sharelist": "apps/sharelist",
+    "sharelist-e2e": "apps/sharelist-e2e"
+  }
+}

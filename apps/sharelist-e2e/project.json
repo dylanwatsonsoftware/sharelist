@@ -1,0 +1,28 @@
+{
+  "root": "apps/sharelist-e2e",
+  "sourceRoot": "apps/sharelist-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/sharelist-e2e/cypress.json",
+        "devServerTarget": "sharelist:serve"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "sharelist:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/sharelist-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["sharelist"]
+}
