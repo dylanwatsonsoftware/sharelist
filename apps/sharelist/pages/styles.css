@@ -151,16 +151,25 @@ pre {
   grid-template-columns: 1fr;
   margin-top: 3.5rem;
 }
-#learning-materials {
+.listcard {
   padding: 2.5rem 2rem;
 }
-#learning-materials h2 {
+.listcard h2 {
   font-weight: 500;
   font-size: 1.25rem;
   letter-spacing: -0.025em;
   line-height: 1.75rem;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+.listcard h4 {
+  font-weight: 300;
+  font-size: 0.8rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  color: rgb(143 143 143);
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 .list-item-link {
   align-items: center;

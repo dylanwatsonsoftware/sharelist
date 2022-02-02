@@ -28,6 +28,15 @@ export function Index() {
               lists.map((list) => (
                 <ListCard list={list} key={list.id}></ListCard>
               ))}
+            <ListCard
+              list={
+                {
+                  name: 'Podcasts',
+                  userName: 'Dylan',
+                  items: [{ name: 'We Fix Space Junk' }, { name: 'Dust' }],
+                } as List
+              }
+            ></ListCard>
           </div>
 
           <p id="love">
