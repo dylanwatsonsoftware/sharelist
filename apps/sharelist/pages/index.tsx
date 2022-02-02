@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 import ListCard from '../components/ListCard';
 import Welcome from '../components/welcome';
+import { listCollection } from '../firebase/collections';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { List } from '../models/list';
 
 const StyledPage = styled.div`
   .page {
@@ -8,6 +11,10 @@ const StyledPage = styled.div`
 `;
 
 export function Index() {
+  const [lists, loading, error] = useCollectionData<List>(listCollection, {
+    idField: 'id',
+  });
+
   return (
     <StyledPage>
       <div className="wrapper">
@@ -15,11 +22,12 @@ export function Index() {
           <Welcome></Welcome>
 
           <div id="middle-content">
-            <ListCard></ListCard>
-            <ListCard></ListCard>
-            <ListCard></ListCard>
-            <ListCard></ListCard>
-            <ListCard></ListCard>
+            {error && <strong>Error: {JSON.stringify(error)}</strong>}
+            {loading && !lists && <span>Loading...</span>}
+            {lists &&
+              lists.map((list) => (
+                <ListCard list={list} key={list.id}></ListCard>
+              ))}
           </div>
 
           <p id="love">

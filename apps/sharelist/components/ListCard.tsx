@@ -1,7 +1,9 @@
-const ListCard = () => {
+import { List } from '../models/list';
+
+const ListCard = ({ list }: { list: List }) => {
   return (
     <div id="learning-materials" className="rounded shadow">
-      <h2>Learning materials</h2>
+      <h2>{list.name}</h2>
       <a
         href="https://nx.dev/getting-started/intro?utm_source=nx-project"
         target="_blank"
