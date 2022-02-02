@@ -25,14 +25,6 @@ const Welcome = () => {
 
   return (
     <>
-      {isSignedIn && (
-        <div id="welcome">
-          <h4>
-            <span>Hello there, {auth().currentUser?.displayName || ''} 👋</span>
-          </h4>
-        </div>
-      )}
-
       <div id="hero" className="rounded">
         <div className={'logo-container'}>
           <Image src="/sharelist.png" alt="Sharelist" layout="fill"></Image>

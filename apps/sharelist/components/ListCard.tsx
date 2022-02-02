@@ -1,5 +1,6 @@
+import { GoHeart, GoPrimitiveDot } from 'react-icons/go';
 import { List } from '../models/list';
-import { GoPrimitiveDot, GoHeart } from 'react-icons/go';
+import AddItem from './AddItem';
 
 const ListCard = ({ list }: { list: List }) => {
   return (
@@ -8,7 +9,7 @@ const ListCard = ({ list }: { list: List }) => {
       <h2>{list.name}</h2>
       {list.items.map((item) => (
         <a
-          href="https://nx.dev/getting-started/intro?utm_source=nx-project"
+          //   href="https://nx.dev/getting-started/intro?utm_source=nx-project"
           target="_blank"
           rel="noreferrer"
           className="list-item-link"
@@ -22,6 +23,7 @@ const ListCard = ({ list }: { list: List }) => {
           <GoHeart />
         </a>
       ))}
+      <AddItem list={list} />
     </div>
   );
 };

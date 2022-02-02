@@ -146,12 +146,12 @@ pre {
   color: rgba(255, 255, 255, 1);
   width: 66.666667%;
 }
-#middle-content {
+.middle-content {
   align-items: flex-start;
   display: grid;
-  gap: 4rem;
+  gap: 1rem;
   grid-template-columns: 1fr;
-  margin-top: 3.5rem;
+  margin-top: 1.5rem;
 }
 .listcard {
   padding: 2.5rem 2rem;
@@ -161,17 +161,27 @@ pre {
   font-size: 1.25rem;
   letter-spacing: -0.025em;
   line-height: 1.75rem;
-  padding-left: 1rem;
   padding-right: 1rem;
 }
 .listcard h4 {
   font-weight: 300;
   font-size: 0.8rem;
-  padding-left: 1rem;
   padding-right: 1rem;
   color: rgb(143 143 143);
   margin-block-start: 0;
   margin-block-end: 0;
+}
+.listcard a.action {
+  background-color: rgb(240, 239, 239);
+  border-radius: 0.75rem;
+  padding: 5px;
+  margin-top: 1.5em;
+  margin-right: 0.6em;
+  color: rgba(55, 65, 81, 1);
+  display: inline-block;
+  text-decoration: inherit;
+  cursor: pointer;
+  float: right;
 }
 .list-item-link {
   align-items: center;
@@ -411,7 +421,7 @@ summary svg {
     width: 200px;
     height: 50px;
   }
-  #middle-content {
+  .middle-content {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

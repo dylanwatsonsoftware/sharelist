@@ -4,6 +4,7 @@ import Welcome from '../components/welcome';
 import { listCollection } from '../firebase/collections';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { List } from '../models/list';
+import AddList from '../components/AddList';
 
 const StyledPage = styled.div`
   .page {
@@ -21,7 +22,9 @@ export function Index() {
         <div className="container">
           <Welcome></Welcome>
 
-          <div id="middle-content">
+          <AddList />
+
+          <div className="middle-content">
             {error && <strong>Error: {JSON.stringify(error)}</strong>}
             {loading && !lists && <span>Loading...</span>}
             {lists &&
