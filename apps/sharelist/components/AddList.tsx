@@ -30,7 +30,7 @@ const AddList = () => {
 
   return (
     <>
-      {auth().currentUser?.uid && (
+      {auth().currentUser && (
         <div className="rounded shadow listcard">
           <h4>Hi there, {auth().currentUser?.displayName || ''} 👋</h4>
           <AddItemInput
