@@ -129,12 +129,16 @@ pre {
   margin-top: 1.5rem;
   padding: 1rem 2rem;
   text-decoration: inherit;
+  cursor: pointer;
 }
 #hero .logo-container {
   display: none;
   justify-content: center;
   padding-left: 2rem;
   padding-right: 2rem;
+  width: 200px;
+  height: 50px;
+  position: relative;
 }
 #hero .logo-container svg {
   color: rgba(255, 255, 255, 1);
@@ -393,6 +397,8 @@ summary svg {
   }
   #hero .logo-container {
     display: flex;
+    width: 200px;
+    height: 50px;
   }
   #middle-content {
     grid-template-columns: repeat(2, minmax(0, 1fr));
