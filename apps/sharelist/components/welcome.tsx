@@ -14,12 +14,10 @@ const uiConfig = {
 
 const Welcome = () => {
   const [isSignedIn, setIsSignedIn] = useState(false); // Local signed-in state.
-  const [showSignInButtons, setShowSignInButtons] = useState(false); // Local signed-in state.
 
   // Listen to the Firebase Auth state and set the local state.
   useEffect(() => {
     const unregisterAuthObserver = auth().onAuthStateChanged((user) => {
-      setShowSignInButtons(false);
       setIsSignedIn(!!user);
     });
     return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
@@ -29,27 +27,26 @@ const Welcome = () => {
     <>
       {isSignedIn && (
         <div id="welcome">
-          <h1>
-            <span>Hello there, {auth().currentUser?.displayName || ''}</span>
-            Welcome to ShareList 👋
-          </h1>
+          <h4>
+            <span>Hello there, {auth().currentUser?.displayName || ''} 👋</span>
+          </h4>
         </div>
       )}
 
       <div id="hero" className="rounded">
-        {!isSignedIn && (
-          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth()} />
-        )}
-
-        {isSignedIn && (
-          <div className="text-container">
-            <a onClick={() => auth().signOut()}>Sign-out</a>
-          </div>
-        )}
-
         <div className={'logo-container'}>
           <Image src="/sharelist.png" alt="Sharelist" layout="fill"></Image>
         </div>
+
+        {/* {isSignedIn && (
+          <div className="text-container">
+            <a onClick={() => auth().signOut()}>Sign-out</a>
+          </div>
+        )} */}
+
+        {!isSignedIn && (
+          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth()} />
+        )}
       </div>
     </>
   );

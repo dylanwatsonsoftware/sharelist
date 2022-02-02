@@ -130,15 +130,17 @@ pre {
   padding: 1rem 2rem;
   text-decoration: inherit;
   cursor: pointer;
+  float: right;
 }
 #hero .logo-container {
-  display: none;
+  display: flex;
   justify-content: center;
   padding-left: 2rem;
   padding-right: 2rem;
   width: 200px;
   height: 50px;
   position: relative;
+  margin: 30px;
 }
 #hero .logo-container svg {
   color: rgba(255, 255, 255, 1);

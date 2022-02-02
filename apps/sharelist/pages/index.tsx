@@ -28,7 +28,7 @@ export function Index() {
               lists.map((list) => (
                 <ListCard list={list} key={list.id}></ListCard>
               ))}
-            <ListCard
+            {/* <ListCard
               list={
                 {
                   name: 'Podcasts',
@@ -36,7 +36,7 @@ export function Index() {
                   items: [{ name: 'We Fix Space Junk' }, { name: 'Dust' }],
                 } as List
               }
-            ></ListCard>
+            ></ListCard> */}
           </div>
 
           <p id="love">
