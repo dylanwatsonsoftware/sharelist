@@ -31,7 +31,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
 
   return (
     <a
-      //   href="https://nx.dev/getting-started/intro?utm_source=nx-project"
+      href={`https://www.google.com/search?q=${item.name}`}
       target="_blank"
       rel="noreferrer"
       className="list-item-link"

@@ -48,9 +48,13 @@ const AddItem = ({ list }: { list: List }) => {
         </a>
       )}
       {!showInput && user?.uid == list.userId && (
-        <a className="action" onClick={() => setShowInput(true)}>
-          <GoPlus />
-        </a>
+        <>
+          <a className="action" onClick={() => setShowInput(true)}>
+            <GoPlus />
+          </a>
+          <br />
+          <br />
+        </>
       )}
     </>
   );
