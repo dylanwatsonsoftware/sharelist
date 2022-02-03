@@ -134,6 +134,7 @@ pre {
 }
 #hero .logo-container {
   display: flex;
+  cursor: pointer;
   justify-content: center;
   padding-left: 2rem;
   padding-right: 2rem;

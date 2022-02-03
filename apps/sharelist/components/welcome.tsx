@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { config } from '../config';
 import { auth, useSignedIn } from '../firebase/auth';
@@ -18,7 +19,9 @@ const Welcome = () => {
     <>
       <div id="hero" className="rounded">
         <div className={'logo-container'}>
-          <Image src="/sharelist.png" alt="Sharelist" layout="fill"></Image>
+          <Link href="/" passHref>
+            <Image src="/sharelist.png" alt="Sharelist" layout="fill" />
+          </Link>
         </div>
 
         {/* {isSignedIn && (
