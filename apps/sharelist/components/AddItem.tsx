@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import { useCallback, useState } from 'react';
 import { GoPlus, GoPrimitiveDot, GoX } from 'react-icons/go';
 import styled from 'styled-components';
-import { auth } from '../firebase/auth';
+import { useSignedIn } from '../firebase/auth';
 import { listCollection } from '../firebase/collections';
 import { List } from '../models/list';
 
@@ -16,6 +16,8 @@ const AddItemInput = styled.input`
 `;
 
 const AddItem = ({ list }: { list: List }) => {
+  const { user } = useSignedIn();
+
   const [showInput, setShowInput] = useState(false);
   const addInputItem = useCallback(
     async (e) => {
@@ -45,7 +47,7 @@ const AddItem = ({ list }: { list: List }) => {
           </a>
         </a>
       )}
-      {!showInput && auth().currentUser?.uid == list.userId && (
+      {!showInput && user?.uid == list.userId && (
         <a className="action" onClick={() => setShowInput(true)}>
           <GoPlus />
         </a>

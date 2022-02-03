@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { config } from '../config';
-import { auth } from '../firebase/auth';
+import { auth, useSignedIn } from '../firebase/auth';
 
 const uiConfig = {
   ...config.firebaseAuth,
@@ -13,15 +13,7 @@ const uiConfig = {
 };
 
 const Welcome = () => {
-  const [isSignedIn, setIsSignedIn] = useState(false); // Local signed-in state.
-
-  // Listen to the Firebase Auth state and set the local state.
-  useEffect(() => {
-    const unregisterAuthObserver = auth().onAuthStateChanged((user) => {
-      setIsSignedIn(!!user);
-    });
-    return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
-  }, []);
+  const { isSignedIn } = useSignedIn();
 
   return (
     <>

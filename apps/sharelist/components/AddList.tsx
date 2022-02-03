@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { auth } from '../firebase/auth';
+import { useSignedIn } from '../firebase/auth';
 import { listCollection } from '../firebase/collections';
 
 const AddItemInput = styled.input`
@@ -15,26 +15,32 @@ const AddItemInput = styled.input`
 `;
 
 const AddList = () => {
+  const { isSignedIn, user } = useSignedIn();
+
   const [inputValue, setValue] = useState('');
-  const addInputItem = useCallback(async (e) => {
-    if (e.key !== 'Enter' || !auth().currentUser?.uid) return;
-    await listCollection.add({
-      name: e.target.value,
-      userId: auth().currentUser?.uid,
-      userName: auth().currentUser?.displayName,
-      items: [],
-      created: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-    setValue('');
-  }, []);
+  const addInputItem = useCallback(
+    async (e) => {
+      if (e.key !== 'Enter' || !user?.uid) return;
+      await listCollection.add({
+        name: e.target.value,
+        userId: user?.uid,
+        userName: user?.displayName,
+        items: [],
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      setValue('');
+    },
+    [user?.displayName, user?.uid]
+  );
 
   return (
     <>
-      {auth().currentUser && (
+      {isSignedIn && (
         <div className="rounded shadow listcard">
-          <h4>Hi there, {auth().currentUser?.displayName || ''} 👋</h4>
+          <h4>Hi there, {user?.displayName || ''} 👋</h4>
           <AddItemInput
             type="text"
+            F
             placeholder="What's your list?"
             value={inputValue}
             onKeyDown={addInputItem}
