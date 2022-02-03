@@ -27,6 +27,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
   if (!data) return <div>loading...</div>;
 
   const firstResult = !error && data?.results[0];
+  const name = firstResult?.name || firstResult?.title;
 
   return (
     <a
@@ -36,7 +37,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
       className="list-item-link"
       key={item.name}
     >
-      {!firstResult?.title?.includes(item.name) ? (
+      {!name?.includes(item.name) || firstResult?.vote_count < 400 ? (
         <GoPrimitiveDot />
       ) : (
         <ImageHolder>
