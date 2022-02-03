@@ -35,9 +35,9 @@ const AddList = () => {
 
   return (
     <>
-      {isSignedIn && (
+      {user && (
         <div className="rounded shadow listcard">
-          <h4>Hi there, {user?.displayName || ''} 👋</h4>
+          <h4>Hi there, {user.displayName || ''} 👋</h4>
           <AddItemInput
             type="text"
             placeholder="What's your list?"

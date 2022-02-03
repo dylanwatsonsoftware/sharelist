@@ -7,7 +7,7 @@ const auth = () => {
 };
 
 const useSignedIn = () => {
-  const [isSignedIn, setIsSignedIn] = useState(!!auth().currentUser);
+  const [isSignedIn, setIsSignedIn] = useState(true);
   const [user, setUser] = useState(auth().currentUser);
 
   // Listen to the Firebase Auth state and set the local state.
