@@ -40,7 +40,6 @@ const AddList = () => {
           <h4>Hi there, {user?.displayName || ''} 👋</h4>
           <AddItemInput
             type="text"
-            F
             placeholder="What's your list?"
             value={inputValue}
             onKeyDown={addInputItem}
