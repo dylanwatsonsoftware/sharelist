@@ -16,7 +16,12 @@ export function List() {
   if (error) return <strong>Error: {JSON.stringify(error)}</strong>;
   if (loading || !list) return <span>Loading...</span>;
 
-  return <ListCard list={list}></ListCard>;
+  return <>
+<Head>
+        <title>{list.name}</title>
+      </Head>
+<ListCard list={list}></ListCard>
+</>
 }
 
 export default List;
