@@ -32,8 +32,8 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
   if (error) return <div>failed to load {error}</div>;
   if (!data) return <div>loading...</div>;
 
-  const firstResult = !error && data?.results[0];
-  const firstGame = !gameResult.error && gameResult.data?.games[0];
+  const firstResult = !error && data?.results?.[0];
+  const firstGame = !gameResult.error && gameResult.data?.games?.[0];
   const name = firstResult?.name || firstResult?.title;
 
   const image = firstResult && name?.includes(item.name) && firstResult?.vote_count > 400 ? 'https://image.tmdb.org/t/p/w92/' + firstResult?.poster_path : firstGame?.images?.small;
