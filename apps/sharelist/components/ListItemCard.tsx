@@ -23,12 +23,21 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
     fetcher
   );
 
+  const gameResult = useSWR<any>(
+    'https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&limit=1&pretty=true&client_id=BgpCCdyRuv&name=' +
+      encodeURIComponent(item.name),
+    fetcher
+  );
+
   if (error) return <div>failed to load {error}</div>;
   if (!data) return <div>loading...</div>;
 
   const firstResult = !error && data?.results[0];
+  const firstGame = !gameResult.error && gameResult.data?.games[0];
   const name = firstResult?.name || firstResult?.title;
 
+  const image = firstResult && !name?.includes(item.name) || firstResult?.vote_count < 400 ? 'https://image.tmdb.org/t/p/w92/' + firstResult?.poster_path : firstGame?.image?.small;
+  
   return (
     <a
       href={`https://www.google.com/search?q=${item.name}`}
@@ -37,12 +46,12 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
       className="list-item-link"
       key={item.name}
     >
-      {!name?.includes(item.name) || firstResult?.vote_count < 400 ? (
+      {!image ? (
         <GoPrimitiveDot />
       ) : (
         <ImageHolder>
           <Image
-            src={'https://image.tmdb.org/t/p/w92/' + firstResult?.poster_path}
+            src={image}
             alt={item.name}
             layout="fill"
           />
