@@ -24,7 +24,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
   );
 
   const gameResult = useSWR<any>(
-    'https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&limit=1&pretty=true&client_id=BgpCCdyRuv&name=' +
+    'https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&limit=1&pretty=true&client_id=' + process.env.NEXT_PUBLIC_BOARDGAME_CLIENT_ID + '&name=' +
       encodeURIComponent(item.name),
     fetcher
   );
