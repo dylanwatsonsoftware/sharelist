@@ -36,7 +36,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
   const firstGame = !gameResult.error && gameResult.data?.games?.[0];
   const name = firstResult?.name || firstResult?.title;
 
-  const image = firstResult && name?.includes(item.name) && firstResult?.vote_count > 400 ? 'https://image.tmdb.org/t/p/w92/' + firstResult?.poster_path : firstGame?.name?.includes(item.name) ? firstGame?.images?.small : undefined;
+  const image = firstResult && name?.toLowerCase().includes(item.name.toLowerCase()) && firstResult?.vote_count > 400 ? 'https://image.tmdb.org/t/p/w92/' + firstResult?.poster_path : firstGame?.name?.toLowerCase().includes(item.name.toLowerCase()) ? firstGame?.images?.small : undefined;
   
   return (
     <a
