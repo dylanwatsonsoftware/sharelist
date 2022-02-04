@@ -4,6 +4,7 @@ import ListCard from '../../components/ListCard';
 import { config } from '../../config';
 import { listCollection } from '../../firebase/collections';
 import { List } from '../../models/list';
+import { Head } from 'next/document';
 
 export function List() {
   const { query } = useRouter();
