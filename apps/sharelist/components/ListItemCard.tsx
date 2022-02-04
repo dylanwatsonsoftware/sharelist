@@ -24,7 +24,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
   );
 
   const gameResult = useSWR<any>(
-    'https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&limit=1&pretty=true&client_id=BgpCCdyRuv&name=' +
+    'https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&limit=1&pretty=true&client_id=' + process.env.NEXT_PUBLIC_BOARDGAME_CLIENT_ID + '&name=' +
       encodeURIComponent(item.name),
     fetcher
   );
@@ -36,7 +36,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
   const firstGame = !gameResult.error && gameResult.data?.games?.[0];
   const name = firstResult?.name || firstResult?.title;
 
-  const image = firstResult && name?.includes(item.name) && firstResult?.vote_count > 400 ? 'https://image.tmdb.org/t/p/w92/' + firstResult?.poster_path : firstGame?.images?.small;
+  const image = firstResult && name?.toLowerCase().includes(item.name.toLowerCase()) && firstResult?.vote_count > 400 ? 'https://image.tmdb.org/t/p/w92/' + firstResult?.poster_path : firstGame?.name?.toLowerCase().includes(item.name.toLowerCase()) ? firstGame?.images?.small : undefined;
   
   return (
     <a
