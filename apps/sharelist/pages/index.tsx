@@ -5,9 +5,12 @@ import { listCollection } from '../firebase/collections';
 import { List } from '../models/list';
 
 export function Index() {
-  const [lists, loading, error] = useCollectionData<List>(listCollection, {
-    idField: 'id',
-  });
+  const [lists, loading, error] = useCollectionData<List>(
+    listCollection.orderBy('updated', 'desc'),
+    {
+      idField: 'id',
+    }
+  );
 
   return (
     <>

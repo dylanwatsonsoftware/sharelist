@@ -25,6 +25,7 @@ const AddItem = ({ list }: { list: List }) => {
       const val = e.target.value;
       await listCollection.doc(list.id).update({
         items: firebase.firestore.FieldValue.arrayUnion({ name: val }),
+        updated: firebase.firestore.FieldValue.serverTimestamp(),
       });
       setShowInput(false);
     },

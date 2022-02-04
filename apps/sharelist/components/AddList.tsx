@@ -26,6 +26,7 @@ const AddList = () => {
         userId: user?.uid,
         userName: user?.displayName,
         items: [],
+        updated: firebase.firestore.FieldValue.serverTimestamp(),
         created: firebase.firestore.FieldValue.serverTimestamp(),
       });
       setValue('');
