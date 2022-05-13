@@ -1,12 +1,20 @@
 //https://image.tmdb.org/t/p/w92/7lyBcpYB0Qt8gYhXYaEZUNlNQAv.jpg
 
-import { GoHeart, GoPrimitiveDot } from 'react-icons/go';
-import { ListItem } from '../models/list';
+import firebase from 'firebase/app';
+import { GoHeart, GoCheck, GoPrimitiveDot } from 'react-icons/go';
+import {
+  RiCheckboxBlankCircleLine,
+  RiCheckboxCircleLine,
+} from 'react-icons/ri';
+import { List, ListItem } from '../models/list';
 import useSWR from 'swr';
 import { MovieDBResult } from '../models/MovieDBResults';
 import Image from 'next/image';
 import fetcher from '../libs/fetcher';
 import styled from 'styled-components';
+import { useCallback } from 'react';
+import { listCollection } from '../firebase/collections';
+import { useSignedIn } from '../firebase/auth';
 
 const ImageHolder = styled.div`
   width: 45px;
@@ -14,6 +22,26 @@ const ImageHolder = styled.div`
   position: relative;
   margin-right: 10px;
 `;
+
+const Button = styled.button`
+  margin: 10px;
+  padding: 10px;
+  border-radius: 50%;
+`;
+
+async function update(list: List, item: ListItem, updates: Partial<ListItem>) {
+  await listCollection.doc(list.id).update({
+    items: firebase.firestore.FieldValue.arrayRemove(item),
+    updated: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  await listCollection.doc(list.id).update({
+    items: firebase.firestore.FieldValue.arrayUnion({
+      ...item,
+      ...updates,
+    }),
+    updated: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+}
 
 const useImage = (item: ListItem) => {
   const { data, error } = useSWR<MovieDBResult>(
@@ -47,33 +75,53 @@ const useImage = (item: ListItem) => {
   return { image, error, data };
 };
 
-const ListItemCard = ({ item }: { item: ListItem }) => {
+const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
+  const { user } = useSignedIn();
+  const isMyList = user?.uid == list.userId;
+  const showSmall = isMyList && item.checked;
   const { error, data, image } = useImage(item);
+
+  const checkItem = useCallback(async () => {
+    await update(list, item, {
+      checked: true,
+    });
+  }, [item, list]);
 
   if (error) return <div>failed to load {error}</div>;
   if (!data) return <div>loading...</div>;
 
   return (
-    <a
-      href={`https://www.google.com/search?q=${item.name}`}
-      target="_blank"
-      rel="noreferrer"
-      className="list-item-link"
+    <span
+      className={`list-item-link ${showSmall && 'small'} ${
+        isMyList && item.checked && 'checked'
+      }`}
       key={item.name}
     >
-      {!image ? (
-        <GoPrimitiveDot />
-      ) : (
-        <ImageHolder>
-          <Image src={image} alt={item.name} layout="fill" />
-        </ImageHolder>
-      )}
-      <span>
+      {!showSmall &&
+        (!image ? (
+          <GoPrimitiveDot />
+        ) : (
+          <ImageHolder>
+            <Image src={image} alt={item.name} layout="fill" />
+          </ImageHolder>
+        ))}
+      <a
+        href={`https://www.google.com/search?q=${item.name}`}
+        target="_blank"
+        rel="noreferrer"
+      >
         {item.name}
-        {/* <span> Everything is in there </span> */}
-      </span>
-      <GoHeart />
-    </a>
+      </a>
+      {isMyList && (
+        <Button onClick={checkItem}>
+          {item.checked ? (
+            <RiCheckboxCircleLine />
+          ) : (
+            <RiCheckboxBlankCircleLine />
+          )}
+        </Button>
+      )}
+    </span>
   );
 };
 

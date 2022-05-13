@@ -20,7 +20,7 @@ const ListCard = ({ list }: { list: List }) => {
       <h4>{list.userName}&apos;s</h4>
       <h2>{list.name}</h2>
       {list.items.map((item) => (
-        <ListItemCard item={item} key={item.name} />
+        <ListItemCard item={item} list={list} key={item.name} />
       ))}
       <AddItem list={list} />
     </div>
