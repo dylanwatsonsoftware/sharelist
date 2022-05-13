@@ -199,6 +199,7 @@ pre {
 }
 .list-item-link.small {
   padding: 0;
+  padding-left: 1rem;
   margin: 0;
 }
 .list-item-link svg:first-child {

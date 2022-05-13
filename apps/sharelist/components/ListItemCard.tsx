@@ -97,14 +97,13 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
       }`}
       key={item.name}
     >
-      {!showSmall &&
-        (!image ? (
-          <GoPrimitiveDot />
-        ) : (
-          <ImageHolder>
-            <Image src={image} alt={item.name} layout="fill" />
-          </ImageHolder>
-        ))}
+      {!image ? (
+        <GoPrimitiveDot />
+      ) : (
+        <ImageHolder>
+          <Image src={image} alt={item.name} layout="fill" />
+        </ImageHolder>
+      )}
       <a
         href={`https://www.google.com/search?q=${item.name}`}
         target="_blank"
