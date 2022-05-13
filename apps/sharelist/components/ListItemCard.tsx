@@ -83,7 +83,7 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
 
   const checkItem = useCallback(async () => {
     await update(list, item, {
-      checked: true,
+      checked: !item.checked,
     });
   }, [item, list]);
 
