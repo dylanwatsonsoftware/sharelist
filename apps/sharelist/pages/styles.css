@@ -202,6 +202,9 @@ pre {
   padding-left: 1rem;
   margin: 0;
 }
+.list-item-link.small img {
+  opacity: 0.4;
+}
 .list-item-link svg:first-child {
   height: 1.5rem;
   transition-property: background-color, border-color, color, fill, stroke,
