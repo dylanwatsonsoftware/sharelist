@@ -1,7 +1,7 @@
 //https://image.tmdb.org/t/p/w92/7lyBcpYB0Qt8gYhXYaEZUNlNQAv.jpg
 
 import firebase from 'firebase/app';
-import { GoHeart, GoCheck, GoPrimitiveDot } from 'react-icons/go';
+import { GoHeart, GoCheck, GoPrimitiveDot, GoTrashcan } from 'react-icons/go';
 import {
   RiCheckboxBlankCircleLine,
   RiCheckboxCircleLine,
@@ -29,11 +29,16 @@ const Button = styled.button`
   border-radius: 50%;
 `;
 
-async function update(list: List, item: ListItem, updates: Partial<ListItem>) {
+async function remove(list: List, item: ListItem) {
   await listCollection.doc(list.id).update({
     items: firebase.firestore.FieldValue.arrayRemove(item),
     updated: firebase.firestore.FieldValue.serverTimestamp(),
   });
+}
+
+async function update(list: List, item: ListItem, updates: Partial<ListItem>) {
+  await remove(list, item);
+
   await listCollection.doc(list.id).update({
     items: firebase.firestore.FieldValue.arrayUnion({
       ...item,
@@ -86,6 +91,9 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
       checked: !item.checked,
     });
   }, [item, list]);
+  const removeItem = useCallback(async () => {
+    await remove(list, item);
+  }, [item, list]);
 
   if (error) return <div>failed to load {error}</div>;
   if (!data) return <div>loading...</div>;
@@ -113,12 +121,15 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
       </a>
       {isMyList && (
         <div className="btn-group">
-          <Button onClick={checkItem}>
+          <Button title="Check item" onClick={checkItem}>
             {item.checked ? (
               <RiCheckboxCircleLine />
             ) : (
               <RiCheckboxBlankCircleLine />
             )}
+          </Button>
+          <Button title="Remove item" onClick={removeItem}>
+            <GoTrashcan />
           </Button>
         </div>
       )}
