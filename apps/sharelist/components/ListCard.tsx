@@ -19,9 +19,11 @@ const ListCard = ({ list }: { list: List }) => {
       </Share>
       <h4>{list.userName}&apos;s</h4>
       <h2>{list.name}</h2>
-      {list.items.map((item) => (
-        <ListItemCard item={item} list={list} key={item.name} />
-      ))}
+      {list.items
+        .sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? 1 : -1))
+        .map((item) => (
+          <ListItemCard item={item} list={list} key={item.name} />
+        ))}
       <AddItem list={list} />
     </div>
   );
