@@ -112,13 +112,15 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
         {item.name}
       </a>
       {isMyList && (
-        <Button onClick={checkItem}>
-          {item.checked ? (
-            <RiCheckboxCircleLine />
-          ) : (
-            <RiCheckboxBlankCircleLine />
-          )}
-        </Button>
+        <div className="btn-group">
+          <Button onClick={checkItem}>
+            {item.checked ? (
+              <RiCheckboxCircleLine />
+            ) : (
+              <RiCheckboxBlankCircleLine />
+            )}
+          </Button>
+        </div>
       )}
     </span>
   );

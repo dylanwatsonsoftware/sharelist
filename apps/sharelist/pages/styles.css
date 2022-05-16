@@ -247,12 +247,19 @@ pre {
 .list-item-link > span > span:hover {
   color: rgba(243, 244, 246, 1);
 }
+.list-item-link button {
+  float: right;
+}
 .list-item-link button svg:hover {
   color: rgb(175, 175, 175);
 }
 .list-item-link.checked {
   color: rgb(175, 175, 175);
   text-decoration: line-through;
+  padding-right: 1rem;
+}
+.list-item-link .btn-group {
+  margin-left: auto;
 }
 .button-pill {
   padding: 1.5rem 2rem;
