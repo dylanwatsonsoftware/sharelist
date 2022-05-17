@@ -1,20 +1,21 @@
 //https://image.tmdb.org/t/p/w92/7lyBcpYB0Qt8gYhXYaEZUNlNQAv.jpg
 
 import firebase from 'firebase/app';
-import { GoHeart, GoCheck, GoPrimitiveDot, GoTrashcan } from 'react-icons/go';
+import Image from 'next/image';
+import { useCallback } from 'react';
+import { GoPrimitiveDot, GoTrashcan } from 'react-icons/go';
 import {
   RiCheckboxBlankCircleLine,
   RiCheckboxCircleLine,
 } from 'react-icons/ri';
-import { List, ListItem } from '../models/list';
-import useSWR from 'swr';
-import { MovieDBResult } from '../models/MovieDBResults';
-import Image from 'next/image';
-import fetcher from '../libs/fetcher';
 import styled from 'styled-components';
-import { useCallback } from 'react';
-import { listCollection } from '../firebase/collections';
+import useSWR from 'swr';
 import { useSignedIn } from '../firebase/auth';
+import { listCollection } from '../firebase/collections';
+import fetcher from '../libs/fetcher';
+import { GameResult } from '../models/GameResult';
+import { List, ListItem } from '../models/list';
+import { MovieDBResult } from '../models/MovieDBResults';
 
 const ImageHolder = styled.div`
   width: 45px;
@@ -48,19 +49,24 @@ async function update(list: List, item: ListItem, updates: Partial<ListItem>) {
   });
 }
 
-const useImage = (item: ListItem) => {
+const boardGameAtlasUrl = (name: string) =>
+  `https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&limit=1&pretty=true&client_id=${
+    process.env.NEXT_PUBLIC_BOARDGAME_CLIENT_ID
+  }&name=${encodeURIComponent(name)}`;
+
+const movieDbUrl = (name: string) =>
+  `https://api.themoviedb.org/3/search/multi?api_key=fff3eb2aeadd24e26460b0f96ea7b056&language=en-US&query=${encodeURIComponent(
+    name
+  )}&page=1`;
+
+const useImage = (list: List, item: ListItem) => {
   const { data, error } = useSWR<MovieDBResult>(
-    'https://api.themoviedb.org/3/search/multi?api_key=fff3eb2aeadd24e26460b0f96ea7b056&language=en-US&query=' +
-      encodeURIComponent(item.name) +
-      '&page=1&include_adult=false',
+    () => movieDbUrl(item.name),
     fetcher
   );
 
-  const gameResult = useSWR<any>(
-    'https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&limit=1&pretty=true&client_id=' +
-      process.env.NEXT_PUBLIC_BOARDGAME_CLIENT_ID +
-      '&name=' +
-      encodeURIComponent(item.name),
+  const gameResult = useSWR<GameResult>(
+    () => boardGameAtlasUrl(item.name),
     fetcher
   );
 
@@ -77,14 +83,14 @@ const useImage = (item: ListItem) => {
       ? firstGame?.images?.small
       : undefined;
 
-  return { image, error, data };
+  return { image };
 };
 
 const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
   const { user } = useSignedIn();
   const isMyList = user?.uid == list.userId;
   const showSmall = isMyList && item.checked;
-  const { error, data, image } = useImage(item);
+  const { image } = useImage(list, item);
 
   const checkItem = useCallback(async () => {
     await update(list, item, {
@@ -94,9 +100,6 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
   const removeItem = useCallback(async () => {
     await remove(list, item);
   }, [item, list]);
-
-  if (error) return <div>failed to load {error}</div>;
-  if (!data) return <div>loading...</div>;
 
   return (
     <span

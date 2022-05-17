@@ -15,7 +15,7 @@ const AddItemInput = styled.input`
 `;
 
 const AddList = () => {
-  const { isSignedIn, user } = useSignedIn();
+  const { user } = useSignedIn();
 
   const [inputValue, setValue] = useState('');
   const addInputItem = useCallback(
