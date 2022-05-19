@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import AddList from '../components/AddList';
 import ListCard from '../components/ListCard';
@@ -14,6 +15,13 @@ export function Index() {
 
   return (
     <>
+      <div style={{ display: 'flex' }}>
+        <Link href="/">
+          <a className="list-item-link">My Lists</a>
+        </Link>
+        <span className="list-item-link active">Friends Lists</span>
+      </div>
+
       <AddList />
 
       <div className="middle-content">

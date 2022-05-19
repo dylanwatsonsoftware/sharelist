@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useRouter } from 'next/router';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import ListCard from '../../components/ListCard';
@@ -16,9 +17,19 @@ export function List() {
   if (error) return <strong>Error: {JSON.stringify(error)}</strong>;
   if (loading || !list) return <span>Loading...</span>;
 
-  return <>
-<ListCard list={list}></ListCard>
-</>
+  return (
+    <>
+      <div style={{ display: 'flex' }}>
+        <Link href="/">
+          <a className="list-item-link">My Lists</a>
+        </Link>
+        <Link href="/friends">
+          <a className="list-item-link">Friends Lists</a>
+        </Link>
+      </div>
+      <ListCard list={list}></ListCard>
+    </>
+  );
 }
 
 export default List;

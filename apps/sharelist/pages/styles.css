@@ -247,6 +247,10 @@ pre {
   color: rgba(255, 255, 255, 1);
   background-color: hsla(162, 47%, 50%, 1);
 }
+.list-item-link.active {
+  color: rgba(255, 255, 255, 1);
+  background-color: hsla(162, 47%, 50%, 0.8);
+}
 .list-item-link > span > span:hover {
   color: rgba(243, 244, 246, 1);
 }
