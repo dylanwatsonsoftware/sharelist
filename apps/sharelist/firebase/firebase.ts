@@ -10,4 +10,6 @@ const getFirebase = () => {
   return firebase.app();
 };
 
+export type User = firebase.User;
+
 export { getFirebase };

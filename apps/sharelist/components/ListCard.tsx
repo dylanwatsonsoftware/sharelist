@@ -7,17 +7,28 @@ import Link from 'next/link';
 
 const Share = styled.span`
   float: right;
-  cursor: pointer;
+`;
+
+const A = styled.a`
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 const ListCard = ({ list }: { list: List }) => {
   return (
     <div className="rounded shadow listcard">
       <Share>
         <Link href={`/list/${list.id}`} passHref>
-          <BsShareFill />
+          <a>
+            <BsShareFill />
+          </a>
         </Link>
       </Share>
-      <h4>{list.userName}&apos;s</h4>
+      <Link href={`/user/${list.userId}`} passHref>
+        <A>
+          <h4>{list.userName}&apos;s</h4>
+        </A>
+      </Link>
       <h2>{list.name}</h2>
       {list.items
         .sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? 1 : -1))

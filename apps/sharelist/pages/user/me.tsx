@@ -1,5 +1,5 @@
-import UserList from '../components/UserList';
-import { useSignedIn } from '../firebase/auth';
+import UserList from '../../components/UserList';
+import { useSignedIn } from '../../firebase/auth';
 
 export function UserListPage() {
   const { user } = useSignedIn();
@@ -10,7 +10,7 @@ export function UserListPage() {
 
   return (
     <>
-      <div style={{ display: 'flex' }}>
+      <div>
       </div>
       <UserList id={user?.uid}></UserList>
     </>
