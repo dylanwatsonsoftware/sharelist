@@ -4,17 +4,23 @@ import ListItemCard from './ListItemCard';
 import { BsShareFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import Link from 'next/link';
+import { useState } from 'react';
 
 const Share = styled.span`
   float: right;
 `;
 
 const A = styled.a`
+  cursor: pointer;
   &:hover {
     text-decoration: underline;
   }
 `;
+const maxShownDefault = 5;
 const ListCard = ({ list }: { list: List }) => {
+  const [expanded, setExpanded] = useState(false);
+  const isLargerThanThreshold = list.items.length > maxShownDefault;
+
   return (
     <div className="rounded shadow listcard">
       <Share>
@@ -31,10 +37,36 @@ const ListCard = ({ list }: { list: List }) => {
       </Link>
       <h2>{list.name}</h2>
       {list.items
-        .sort((a, b) => (a.checked === b.checked ? 0 : a.checked ? 1 : -1))
+        .sort((a, b) =>
+          !!a.checked === !!b.checked
+            ? a.name.localeCompare(b.name)
+            : a.checked
+            ? 1
+            : -1
+        )
+        .slice(
+          0,
+          isLargerThanThreshold && !expanded ? maxShownDefault : undefined
+        )
         .map((item) => (
           <ListItemCard item={item} list={list} key={item.name} />
         ))}
+      {isLargerThanThreshold && !expanded && (
+        <A
+          style={{ fontSize: 'smaller', marginLeft: '35px' }}
+          onClick={() => setExpanded(true)}
+        >
+          Show more
+        </A>
+      )}
+      {isLargerThanThreshold && expanded && (
+        <A
+          style={{ fontSize: 'smaller', marginLeft: '35px' }}
+          onClick={() => setExpanded(false)}
+        >
+          Show less
+        </A>
+      )}
       <AddItem list={list} />
     </div>
   );
