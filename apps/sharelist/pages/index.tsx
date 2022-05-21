@@ -5,18 +5,14 @@ import { useSignedIn } from '../firebase/auth';
 export function UserListPage() {
   const { user } = useSignedIn();
 
-  if (!user) {
-    <div>Signing in...</div>;
-  }
-
   return (
     <>
-      <div style={{ display: 'flex' }}>
+      {user && <div style={{ display: 'flex' }}>
         <span className="list-item-link active">My Lists</span>
         <Link href="/friends">
           <a className="list-item-link">Friends Lists</a>
         </Link>
-      </div>
+      </div>}
       <UserList id={user?.uid}></UserList>
     </>
   );

@@ -1,18 +1,7 @@
-import Link from "next/link";
-import { useCollectionData } from 'react-firebase-hooks/firestore';
-import AddList from '../components/AddList';
-import ListCard from '../components/ListCard';
-import { listCollection } from '../firebase/collections';
-import { List } from '../models/list';
+import Link from 'next/link';
+import UserList from '../components/UserList';
 
 export function Index() {
-  const [lists, loading, error] = useCollectionData<List>(
-    listCollection.orderBy('updated', 'desc'),
-    {
-      idField: 'id',
-    }
-  );
-
   return (
     <>
       <div style={{ display: 'flex' }}>
@@ -22,15 +11,7 @@ export function Index() {
         <span className="list-item-link active">Friends Lists</span>
       </div>
 
-      <AddList />
-
-      <div className="middle-content">
-        {error && <strong>Error: {JSON.stringify(error)}</strong>}
-        {loading && !lists && <span>Loading...</span>}
-        {lists?.map((list) => (
-          <ListCard list={list} key={list.id}></ListCard>
-        ))}
-      </div>
+      <UserList></UserList>
     </>
   );
 }

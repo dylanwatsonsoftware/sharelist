@@ -5,10 +5,15 @@ import { List } from '../models/list';
 import AddList from './AddList';
 import ListCard from './ListCard';
 
-export const UserList = ({ id }: { id: string }) => {
+export const UserList = ({ id }: { id?: string }) => {
   const { user } = useSignedIn();
+  const showAll = !id;
   const [lists, loading, error] = useCollectionData<List>(
-    listCollection.where('userId', '==', id || '').orderBy('updated', 'desc'),
+    showAll
+      ? listCollection.orderBy('updated', 'desc')
+      : listCollection
+          .where('userId', '==', id || '')
+          .orderBy('updated', 'desc'),
     {
       idField: 'id',
     }
@@ -18,7 +23,7 @@ export const UserList = ({ id }: { id: string }) => {
 
   return (
     <>
-      {userName && <h3>{userName}&apos;s Lists</h3>}
+      {!showAll && userName && <h3>{userName}&apos;s Lists</h3>}
 
       {user?.uid == id && <AddList />}
 
