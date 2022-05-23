@@ -71,7 +71,7 @@ const useImage = (list: List, item: ListItem) => {
 const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
   const { user } = useSignedIn();
   const isMyList = user?.uid == list.userId;
-  const isMyItem = !item.addedById || user?.uid == item.addedById;
+  const isMyItem = user?.uid == item.addedById;
   const showSmall = isMyList && item.checked;
   const { image } = useImage(list, item);
 
@@ -105,7 +105,7 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
         rel="noreferrer"
       >
         {item.name}
-        {item.addedByName && (!isMyList || !isMyItem) && (
+        {item.addedByName && !isMyList && (
           <span
             style={{
               display: 'block',
@@ -118,7 +118,7 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
         )}
       </a>
 
-      {isMyList && (
+      {(isMyList || isMyItem) && (
         <div className="btn-group">
           <Button title="Check item" onClick={checkItem}>
             {item.checked ? (
