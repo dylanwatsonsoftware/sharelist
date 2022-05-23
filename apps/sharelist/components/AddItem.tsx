@@ -4,7 +4,7 @@ import { GoPlus, GoPrimitiveDot, GoX } from 'react-icons/go';
 import styled from 'styled-components';
 import { useSignedIn } from '../firebase/auth';
 import { listCollection } from '../firebase/collections';
-import { List } from '../models/list';
+import { List, ListItem } from '../models/list';
 
 const AddItemInput = styled.input`
   border: none;
@@ -16,20 +16,27 @@ const AddItemInput = styled.input`
 `;
 
 const AddItem = ({ list }: { list: List }) => {
-  const { user } = useSignedIn();
+  const { isSignedIn, user } = useSignedIn();
+  const isMyList = user?.uid == list.userId;
+  const canEdit = isMyList || (isSignedIn && list.collaborate);
 
   const [showInput, setShowInput] = useState(false);
   const addInputItem = useCallback(
     async (e) => {
       if (e.key !== 'Enter') return;
       const val = e.target.value;
+      const item: ListItem = {
+        name: val,
+        addedById: user?.uid,
+        addedByName: user?.displayName,
+      };
       await listCollection.doc(list.id).update({
-        items: firebase.firestore.FieldValue.arrayUnion({ name: val }),
+        items: firebase.firestore.FieldValue.arrayUnion(item),
         updated: firebase.firestore.FieldValue.serverTimestamp(),
       });
       setShowInput(false);
     },
-    [list.id]
+    [list.id, user?.displayName, user?.uid]
   );
 
   return (
@@ -48,7 +55,7 @@ const AddItem = ({ list }: { list: List }) => {
           </a>
         </a>
       )}
-      {!showInput && user?.uid == list.userId && (
+      {!showInput && canEdit && (
         <>
           <a className="action" onClick={() => setShowInput(true)}>
             <GoPlus />

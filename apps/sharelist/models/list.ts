@@ -3,12 +3,20 @@ export interface List {
   name: string;
   userId: string;
   userName: string;
+  collaborate: boolean;
   items: ListItem[];
+
+  updated: Date;
+  created: Date;
 }
 
 export interface ListItem {
   name: string;
-  url: string;
-  image: string;
+
+  addedById?: string;
+  addedByName?: string;
+
+  url?: string;
+  image?: string;
   checked?: boolean;
 }

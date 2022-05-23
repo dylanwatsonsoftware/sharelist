@@ -1,6 +1,5 @@
 //https://image.tmdb.org/t/p/w92/7lyBcpYB0Qt8gYhXYaEZUNlNQAv.jpg
 
-import firebase from 'firebase/app';
 import Image from 'next/image';
 import { useCallback } from 'react';
 import { GoPrimitiveDot, GoTrashcan } from 'react-icons/go';
@@ -11,7 +10,7 @@ import {
 import styled from 'styled-components';
 import useSWR from 'swr';
 import { useSignedIn } from '../firebase/auth';
-import { listCollection } from '../firebase/collections';
+import { remove, update } from '../firebase/collections';
 import fetcher from '../libs/fetcher';
 import { GameResult } from '../models/GameResult';
 import { List, ListItem } from '../models/list';
@@ -25,29 +24,12 @@ const ImageHolder = styled.div`
 `;
 
 const Button = styled.button`
+  cursor: pointer;
   margin: 10px;
   padding: 10px;
   border-radius: 50%;
+  display: flex;
 `;
-
-async function remove(list: List, item: ListItem) {
-  await listCollection.doc(list.id).update({
-    items: firebase.firestore.FieldValue.arrayRemove(item),
-    updated: firebase.firestore.FieldValue.serverTimestamp(),
-  });
-}
-
-async function update(list: List, item: ListItem, updates: Partial<ListItem>) {
-  await remove(list, item);
-
-  await listCollection.doc(list.id).update({
-    items: firebase.firestore.FieldValue.arrayUnion({
-      ...item,
-      ...updates,
-    }),
-    updated: firebase.firestore.FieldValue.serverTimestamp(),
-  });
-}
 
 const boardGameAtlasUrl = (name: string) =>
   `https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&limit=1&pretty=true&client_id=${
@@ -89,6 +71,7 @@ const useImage = (list: List, item: ListItem) => {
 const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
   const { user } = useSignedIn();
   const isMyList = user?.uid == list.userId;
+  const isMyItem = !item.addedById || user?.uid == item.addedById;
   const showSmall = isMyList && item.checked;
   const { image } = useImage(list, item);
 
@@ -106,6 +89,7 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
       className={`list-item-link ${showSmall && 'small'} ${
         isMyList && item.checked && 'checked'
       }`}
+      style={{ flexWrap: 'wrap' }}
       key={item.name}
     >
       {!image ? (
@@ -121,7 +105,19 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
         rel="noreferrer"
       >
         {item.name}
+        {item.addedByName && (!isMyList || !isMyItem) && (
+          <span
+            style={{
+              display: 'block',
+              fontSize: 'smaller',
+              color: 'grey',
+            }}
+          >
+            {item.addedByName}
+          </span>
+        )}
       </a>
+
       {isMyList && (
         <div className="btn-group">
           <Button title="Check item" onClick={checkItem}>
