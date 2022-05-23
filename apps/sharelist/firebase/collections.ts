@@ -16,7 +16,7 @@ export { listCollection, usersCollection, listsByUser };
 export async function remove(list: List, item: ListItem) {
   await listCollection.doc(list.id).update({
     items: firebase.firestore.FieldValue.arrayRemove(item),
-    updated: firebase.firestore.FieldValue.serverTimestamp(),
+    // updated: firebase.firestore.FieldValue.serverTimestamp(),
   });
 }
 
@@ -32,13 +32,13 @@ export async function update(
       ...item,
       ...updates,
     }),
-    updated: firebase.firestore.FieldValue.serverTimestamp(),
+    // updated: firebase.firestore.FieldValue.serverTimestamp(),
   });
 }
 
 export async function updateList(list: List, update: Partial<List>) {
   await listCollection.doc(list.id).update({
     ...update,
-    updated: firebase.firestore.FieldValue.serverTimestamp(),
+    // updated: firebase.firestore.FieldValue.serverTimestamp(),
   });
 }
