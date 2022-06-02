@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useSignedIn } from '../firebase/auth';
 import { listCollection } from '../firebase/collections';
@@ -23,7 +24,14 @@ export const UserList = ({ id }: { id?: string }) => {
 
   return (
     <>
-      {!showAll && userName && <h3>{userName}&apos;s Lists</h3>}
+      {!showAll && userName && (
+        <>
+          <Head>
+            <title>ShareList - {userName}&apos;s Lists</title>
+          </Head>
+          <h3>{userName}&apos;s Lists</h3>
+        </>
+      )}
 
       {user?.uid == id && <AddList />}
 
