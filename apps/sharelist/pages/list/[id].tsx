@@ -1,5 +1,5 @@
-import Head from "next/head";
-import Link from "next/link";
+import Head from 'next/head';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import ListCard from '../../components/ListCard';
@@ -31,7 +31,7 @@ export function List() {
           <a className="list-item-link">Friends Lists</a>
         </Link>
       </div>
-      <ListCard list={list}></ListCard>
+      <ListCard list={list} onlyListShown={true}></ListCard>
     </>
   );
 }

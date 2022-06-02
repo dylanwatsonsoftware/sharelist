@@ -34,12 +34,18 @@ const Button = styled.button`
 `;
 
 const maxShownDefault = 5;
-const ListCard = ({ list }: { list: List }) => {
+const ListCard = ({
+  list,
+  onlyListShown,
+}: {
+  list: List;
+  onlyListShown?: boolean;
+}) => {
   const { user } = useSignedIn();
   const [expanded, setExpanded] = useState(false);
 
   const isMyList = user?.uid == list.userId;
-  const isLargerThanThreshold = list.items.length > maxShownDefault;
+  const canExpand = !onlyListShown && list.items.length > maxShownDefault;
 
   return (
     <div className="rounded shadow listcard">
@@ -64,14 +70,11 @@ const ListCard = ({ list }: { list: List }) => {
             ? 1
             : -1
         )
-        .slice(
-          0,
-          isLargerThanThreshold && !expanded ? maxShownDefault : undefined
-        )
+        .slice(0, canExpand && !expanded ? maxShownDefault : undefined)
         .map((item) => (
           <ListItemCard item={item} list={list} key={item.name} />
         ))}
-      {isLargerThanThreshold && !expanded && (
+      {canExpand && !expanded && (
         <A
           style={{ fontSize: 'smaller', marginLeft: '35px' }}
           onClick={() => setExpanded(true)}
@@ -79,7 +82,7 @@ const ListCard = ({ list }: { list: List }) => {
           Show more
         </A>
       )}
-      {isLargerThanThreshold && expanded && (
+      {canExpand && expanded && (
         <A
           style={{ fontSize: 'smaller', marginLeft: '35px' }}
           onClick={() => setExpanded(false)}
