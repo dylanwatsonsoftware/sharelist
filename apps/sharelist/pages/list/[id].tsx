@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from 'next/router';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
@@ -19,6 +20,9 @@ export function List() {
 
   return (
     <>
+      <Head>
+        <title>ShareList - {list.name}</title>
+      </Head>
       <div style={{ display: 'flex' }}>
         <Link href="/">
           <a className="list-item-link">My Lists</a>
