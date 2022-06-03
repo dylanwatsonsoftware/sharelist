@@ -1,13 +1,11 @@
-import Head from "next/head";
+import { NextSeo } from "next-seo";
 import Link from 'next/link';
 import UserList from '../components/UserList';
 
 export function Index() {
   return (
     <>
-      <Head>
-        <title>ShareList - Friends Lists</title>
-      </Head>
+      <NextSeo title="ShareList - Friends Lists"></NextSeo>
       <div style={{ display: 'flex' }}>
         <Link href="/">
           <a className="list-item-link">My Lists</a>

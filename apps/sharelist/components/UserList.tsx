@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import { NextSeo } from 'next-seo';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useSignedIn } from '../firebase/auth';
 import { listCollection } from '../firebase/collections';
@@ -26,9 +26,7 @@ export const UserList = ({ id }: { id?: string }) => {
     <>
       {!showAll && userName && (
         <>
-          <Head>
-            <title>ShareList - {userName}&apos;s Lists</title>
-          </Head>
+          <NextSeo title={'ShareList - ' + userName + "'s Lists"}></NextSeo>
           <h3>{userName}&apos;s Lists</h3>
         </>
       )}
