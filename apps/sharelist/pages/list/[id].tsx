@@ -1,5 +1,6 @@
 import { NextSeo } from 'next-seo';
 import Link from 'next/link';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import ListCard from '../../components/ListCard';
@@ -20,6 +21,9 @@ export function List() {
 
   return (
     <>
+      <Head>
+        <title>{'ShareList - ' + list.name}</title>
+      </Head>
       <NextSeo title={'ShareList - ' + list.name}></NextSeo>
       <div style={{ display: 'flex' }}>
         <Link href="/">
