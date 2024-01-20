@@ -14,7 +14,7 @@ const AddItemInput = styled.input`
   width: 100%;
 `;
 
-const AddList = () => {
+const AddList = (onSearch: (string) => void) => {
   const { user } = useSignedIn();
 
   const [inputValue, setValue] = useState('');
@@ -30,6 +30,7 @@ const AddList = () => {
         created: firebase.firestore.FieldValue.serverTimestamp(),
       });
       setValue('');
+      onSearch && onSearch('');
     },
     [user?.displayName, user?.uid]
   );
@@ -44,7 +45,10 @@ const AddList = () => {
             placeholder="What's your list?"
             value={inputValue}
             onKeyDown={addInputItem}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => {
+              setValue(e.target.value)
+              onSearch && onSearch(e.target.value)
+            }}
             autoFocus
           ></AddItemInput>
         </div>
