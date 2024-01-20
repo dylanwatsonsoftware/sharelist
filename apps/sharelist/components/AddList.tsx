@@ -14,7 +14,7 @@ const AddItemInput = styled.input`
   width: 100%;
 `;
 
-const AddList = (onSearch: (string) => void) => {
+const AddList = ({onSearch}: {onSearch: (string) => void }) => {
   const { user } = useSignedIn();
 
   const [inputValue, setValue] = useState('');
