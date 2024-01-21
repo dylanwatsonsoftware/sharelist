@@ -33,7 +33,7 @@ export const UserList = ({ id }: { id?: string }) => {
         </>
       )}
 
-      {user?.uid == id && <AddList onSearch={(a) => setQ(a)}></AddList>} />}
+      {user?.uid == id && <AddList onSearch={(a) => setQ(a)} />}
 
       <div className="middle-content">
         {error && <strong>Error: {JSON.stringify(error)}</strong>}
