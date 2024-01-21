@@ -39,7 +39,7 @@ export const UserList = ({ id }: { id?: string }) => {
         {error && <strong>Error: {JSON.stringify(error)}</strong>}
         {loading && !lists && <span>Loading...</span>}
         {lists &&
-          lists.map((list) => <ListCard list={list} key={list.id}></ListCard>)}
+          lists.filter((l) => q == '' || l.name.includes(q)).map((list) => <ListCard list={list} key={list.id}></ListCard>)}
       </div>
     </>
   );
