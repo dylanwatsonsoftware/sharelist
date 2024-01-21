@@ -63,6 +63,7 @@ const ListCard = ({
       </Link>
       <h2>{list.name}</h2>
       {list.items
+        .filter((a) => !list.hideCompleted || !a.checked)
         .sort((a, b) =>
           !!a.checked === !!b.checked
             ? a.name.localeCompare(b.name)
