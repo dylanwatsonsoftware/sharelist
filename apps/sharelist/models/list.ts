@@ -5,6 +5,7 @@ export interface List {
   userName: string;
   collaborate: boolean;
   items: ListItem[];
+  hideCompleted?: boolean;
 
   updated: Date;
   created: Date;
