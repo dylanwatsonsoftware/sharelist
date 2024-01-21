@@ -104,6 +104,20 @@ const ListCard = ({
           )}
         </Button>
       )}
+      {isMyList && (
+        <Button
+          title="Hide completed"
+          style={{ marginLeft: 'auto', background: 'none' }}
+          onClick={() => updateList(list, { hideCompleted: !list.hideCompleted })}
+        >
+          <span style={{ paddingRight: '10px' }}>Hide completed</span>
+          {list.hideCompleted ? (
+            <RiCheckboxCircleLine />
+          ) : (
+            <RiCheckboxBlankCircleLine />
+          )}
+        </Button>
+      )}      
       <AddItem list={list} />
     </div>
   );
