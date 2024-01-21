@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { NextSeo } from 'next-seo';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useSignedIn } from '../firebase/auth';
@@ -7,6 +8,7 @@ import AddList from './AddList';
 import ListCard from './ListCard';
 
 export const UserList = ({ id }: { id?: string }) => {
+  const [q, setQ] = useState('');
   const { user } = useSignedIn();
   const showAll = !id;
   const [lists, loading, error] = useCollectionData<List>(
@@ -31,7 +33,7 @@ export const UserList = ({ id }: { id?: string }) => {
         </>
       )}
 
-      {user?.uid == id && <AddList />}
+      {user?.uid == id && <AddList onSearch={(a) => setQ(a)}></AddList>} />}
 
       <div className="middle-content">
         {error && <strong>Error: {JSON.stringify(error)}</strong>}
