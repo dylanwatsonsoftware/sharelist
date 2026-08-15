@@ -45,8 +45,16 @@ export function getListSeo(list: ListModel, sharedId: string) {
     ? `${list.userName}'s ${list.name} list: ${itemNames}`
     : `${list.userName}'s ${list.name} list on ShareList`;
   const url = `${siteUrl}/list/${encodeURIComponent(sharedId)}`;
+  const itemImages = list.items
+    .map((item) => item.image)
+    .filter((image): image is string => !!image)
+    .slice(0, 4);
   const image =
-    list.items.find((item) => item.image)?.image || defaultSocialImage;
+    itemImages.length > 1
+      ? `${siteUrl}/api/social-card?${itemImages
+          .map((url) => `image=${encodeURIComponent(url)}`)
+          .join('&')}`
+      : itemImages[0] || defaultSocialImage;
 
   return {
     title,

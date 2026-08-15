@@ -31,8 +31,14 @@ describe('shared list social metadata', () => {
         userName: 'Sam',
         collaborate: false,
         items: [
-          { name: 'Board game', image: 'https://images.example/game.jpg' },
-          { name: 'A good book' },
+          {
+            name: 'Board game',
+            image: 'https://d2k4q26owzy373.cloudfront.net/game.jpg',
+          },
+          {
+            name: 'A good book',
+            image: 'https://image.tmdb.org/t/p/w500/book.jpg',
+          },
         ],
       },
       false,
@@ -54,7 +60,7 @@ describe('shared list social metadata', () => {
           site_name: 'ShareList',
           images: [
             {
-              url: 'https://images.example/game.jpg',
+              url: 'https://share-list.vercel.app/api/social-card?image=https%3A%2F%2Fd2k4q26owzy373.cloudfront.net%2Fgame.jpg&image=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2Fbook.jpg',
               alt: 'Birthday ideas',
             },
           ],
