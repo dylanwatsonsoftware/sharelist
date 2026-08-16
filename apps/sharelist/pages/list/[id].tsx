@@ -106,8 +106,10 @@ export function List({ initialSeo }: ListPageProps = {}) {
       />
       {error ? (
         <strong>Error: {JSON.stringify(error)}</strong>
-      ) : loading || !list ? (
+      ) : loading ? (
         <span>Loading...</span>
+      ) : !list ? (
+        <span>List not found</span>
       ) : (
         <>
           <div style={{ display: 'flex' }}>

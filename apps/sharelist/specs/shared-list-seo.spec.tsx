@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
@@ -107,6 +107,20 @@ describe('shared list social metadata', () => {
       }),
       expect.anything()
     );
+  });
+
+  it('shows that the list was not found after loading completes', () => {
+    (useRouter as jest.Mock).mockReturnValue({ query: { id: 'missing' } });
+    (useDocumentData as jest.Mock).mockReturnValue([
+      undefined,
+      false,
+      undefined,
+    ]);
+
+    render(<SharedListPage />);
+
+    expect(screen.getByText('List not found')).toBeTruthy();
+    expect(screen.queryByText('Loading...')).toBeNull();
   });
 
   it('loads list metadata on the server for social crawlers', async () => {
