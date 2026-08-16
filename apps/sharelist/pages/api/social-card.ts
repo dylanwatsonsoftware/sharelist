@@ -1,6 +1,7 @@
 import { get as httpsGet } from 'https';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import sharp from 'sharp';
+
+const sharp: typeof import('sharp') = require('sharp');
 
 const cardWidth = 1200;
 const cardHeight = 630;
