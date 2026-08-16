@@ -28,4 +28,15 @@ describe('social card collage', () => {
       expect.objectContaining({ width: 1200, height: 630, format: 'jpeg' })
     );
   });
+
+  it('creates a visible branded card when no item images are available', async () => {
+    const card = await createSocialCard([]);
+    const metadata = await sharp(card).metadata();
+    const stats = await sharp(card).stats();
+
+    expect(metadata).toEqual(
+      expect.objectContaining({ width: 1200, height: 630, format: 'jpeg' })
+    );
+    expect(stats.channels.some((channel) => channel.stdev > 5)).toBe(true);
+  });
 });

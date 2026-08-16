@@ -26,7 +26,37 @@ interface FirestoreDocument {
 }
 
 const siteUrl = 'https://share-list.vercel.app';
-const defaultSocialImage = `${siteUrl}/_next/image?url=%2Fsharelist.png&w=1200&q=75`;
+const defaultSocialImage = `${siteUrl}/api/social-card`;
+
+async function getMovieImage(name: string): Promise<string | undefined> {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/search/multi?api_key=fff3eb2aeadd24e26460b0f96ea7b056&language=en-US&query=${encodeURIComponent(
+      name
+    )}&page=1`
+  );
+  if (!response.ok) return undefined;
+
+  const result = (await response.json()) as {
+    results?: Array<{
+      name?: string;
+      title?: string;
+      vote_count?: number;
+      poster_path?: string;
+    }>;
+  };
+  const firstResult = result.results?.[0];
+  const resultName = firstResult?.name || firstResult?.title;
+
+  if (
+    !firstResult?.poster_path ||
+    !resultName?.toLowerCase().includes(name.toLowerCase()) ||
+    (firstResult.vote_count || 0) <= 400
+  ) {
+    return undefined;
+  }
+
+  return `https://image.tmdb.org/t/p/w500${firstResult.poster_path}`;
+}
 
 async function getServerList(id: string): Promise<SocialList | undefined> {
   const projectId = encodeURIComponent(config.firebase.projectId);
@@ -49,10 +79,22 @@ async function getServerList(id: string): Promise<SocialList | undefined> {
     }))
     .filter((item) => item.name);
 
+  const itemsWithImages = await Promise.all(
+    items.map(async (item, index) => {
+      if (item.image || index >= 4) return item;
+
+      try {
+        return { ...item, image: await getMovieImage(item.name) };
+      } catch (error) {
+        return item;
+      }
+    })
+  );
+
   return {
     name: fields.name?.stringValue || '',
     userName: fields.userName?.stringValue || '',
-    items,
+    items: itemsWithImages,
   };
 }
 

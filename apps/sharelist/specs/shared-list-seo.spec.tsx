@@ -106,7 +106,7 @@ describe('shared list social metadata', () => {
           url: 'https://share-list.vercel.app/list/birthday',
           images: [
             expect.objectContaining({
-              url: expect.stringContaining('/_next/image?url=%2Fsharelist.png'),
+              url: 'https://share-list.vercel.app/api/social-card',
             }),
           ],
         }),
@@ -134,31 +134,44 @@ describe('shared list social metadata', () => {
 
   it('loads list metadata on the server for social crawlers', async () => {
     config.paths.birthday = 'birthday-document';
-    const fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        fields: {
-          name: { stringValue: 'Birthday ideas' },
-          userName: { stringValue: 'Sam' },
-          items: {
-            arrayValue: {
-              values: [
-                {
-                  mapValue: {
-                    fields: {
-                      name: { stringValue: 'Board game' },
-                      image: {
-                        stringValue:
-                          'https://d2k4q26owzy373.cloudfront.net/game.jpg',
+    const fetch = jest.fn().mockImplementation((url: string) => {
+      if (url.startsWith('https://api.themoviedb.org/')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            results: [
+              {
+                title: 'Board game',
+                vote_count: 500,
+                poster_path: '/board-game.jpg',
+              },
+            ],
+          }),
+        });
+      }
+
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          fields: {
+            name: { stringValue: 'Birthday ideas' },
+            userName: { stringValue: 'Sam' },
+            items: {
+              arrayValue: {
+                values: [
+                  {
+                    mapValue: {
+                      fields: {
+                        name: { stringValue: 'Board game' },
                       },
                     },
                   },
-                },
-              ],
+                ],
+              },
             },
           },
-        },
-      }),
+        }),
+      });
     });
     global.fetch = fetch as never;
 
@@ -168,6 +181,11 @@ describe('shared list social metadata', () => {
 
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining('/documents/lists/birthday-document?key=')
+    );
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'https://api.themoviedb.org/3/search/multi?api_key='
+      )
     );
 
     const initialSeo = (result as { props: { initialSeo: object } }).props
@@ -182,7 +200,7 @@ describe('shared list social metadata', () => {
       'rel="canonical" href="https://share-list.vercel.app/list/birthday"'
     );
     expect(initialHtml).toContain(
-      'property="og:image" content="https://d2k4q26owzy373.cloudfront.net/game.jpg"'
+      'property="og:image" content="https://image.tmdb.org/t/p/w500/board-game.jpg"'
     );
   });
 });

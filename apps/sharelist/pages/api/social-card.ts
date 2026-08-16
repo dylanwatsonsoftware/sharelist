@@ -102,6 +102,22 @@ function downloadImage(url: URL, redirectsLeft = 2): Promise<Buffer> {
 }
 
 export async function createSocialCard(images: Buffer[]): Promise<Buffer> {
+  if (!images.length) {
+    const fallback = Buffer.from(`
+      <svg width="${cardWidth}" height="${cardHeight}" viewBox="0 0 ${cardWidth} ${cardHeight}" xmlns="http://www.w3.org/2000/svg">
+        <rect width="${cardWidth}" height="${cardHeight}" fill="#143757"/>
+        <circle cx="1050" cy="90" r="250" fill="#1d4d73"/>
+        <circle cx="110" cy="610" r="260" fill="#0d2a44"/>
+        <text x="600" y="285" text-anchor="middle" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="112" font-weight="700">ShareList</text>
+        <text x="600" y="390" text-anchor="middle" fill="#dce9f3" font-family="Arial, Helvetica, sans-serif" font-size="42">Open this shared list &#8594;</text>
+      </svg>
+    `);
+
+    return sharp(fallback)
+      .jpeg({ quality: 90, progressive: true })
+      .toBuffer();
+  }
+
   const positions = getCollageLayout(images.length);
   const tiles = await Promise.all(
     images.map((image, index) => {
@@ -144,11 +160,6 @@ export default async function socialCard(
 
   try {
     const imageUrls = requestedImages.slice(0, 4).map(validateImageUrl);
-    if (!imageUrls.length) {
-      response.status(400).json({ error: 'At least one image is required' });
-      return;
-    }
-
     const downloadedImages = await Promise.all(imageUrls.map(downloadImage));
     const card = await createSocialCard(downloadedImages);
 
