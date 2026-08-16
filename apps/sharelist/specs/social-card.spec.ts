@@ -1,7 +1,17 @@
 import sharp from 'sharp';
-import { createSocialCard, getCollageLayout } from '../pages/api/social-card';
+import {
+  createSocialCard,
+  getCollageLayout,
+  validateImageUrl,
+} from '../pages/api/social-card';
 
 describe('social card collage', () => {
+  it('accepts Apple Podcasts artwork URLs', () => {
+    expect(
+      validateImageUrl('https://is1-ssl.mzstatic.com/image/podcast.jpg').href
+    ).toBe('https://is1-ssl.mzstatic.com/image/podcast.jpg');
+  });
+
   it('lays out three images with one large tile and two smaller tiles', () => {
     expect(getCollageLayout(3)).toEqual([
       { width: 558, height: 456, left: 36, top: 36 },

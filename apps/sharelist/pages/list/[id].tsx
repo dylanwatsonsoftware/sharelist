@@ -6,6 +6,11 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 import ListCard from '../../components/ListCard';
 import { config } from '../../config';
 import { listCollection } from '../../firebase/collections';
+import {
+  getPodcastArtwork,
+  PodcastSearchResult,
+  podcastSearchUrl,
+} from '../../libs/imageSearch';
 import { List as ListModel } from '../../models/list';
 
 type SocialList = Pick<ListModel, 'name' | 'userName' | 'items'>;
@@ -58,6 +63,20 @@ async function getMovieImage(name: string): Promise<string | undefined> {
   return `https://image.tmdb.org/t/p/w500${firstResult.poster_path}`;
 }
 
+async function getPodcastImage(name: string): Promise<string | undefined> {
+  const response = await fetch(podcastSearchUrl(name));
+  if (!response.ok) return undefined;
+
+  return getPodcastArtwork(
+    (await response.json()) as PodcastSearchResult,
+    name
+  );
+}
+
+async function getItemImage(name: string): Promise<string | undefined> {
+  return (await getMovieImage(name)) || (await getPodcastImage(name));
+}
+
 async function getServerList(id: string): Promise<SocialList | undefined> {
   const projectId = encodeURIComponent(config.firebase.projectId);
   const documentId = encodeURIComponent(id);
@@ -84,7 +103,7 @@ async function getServerList(id: string): Promise<SocialList | undefined> {
       if (item.image || index >= 4) return item;
 
       try {
-        return { ...item, image: await getMovieImage(item.name) };
+        return { ...item, image: await getItemImage(item.name) };
       } catch (error) {
         return item;
       }

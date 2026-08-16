@@ -203,4 +203,61 @@ describe('shared list social metadata', () => {
       'property="og:image" content="https://image.tmdb.org/t/p/w500/board-game.jpg"'
     );
   });
+
+  it('uses Apple Podcasts artwork when an item has no movie match', async () => {
+    const artwork =
+      'https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/limetown/600x600bb.jpg';
+    global.fetch = jest.fn().mockImplementation((url: string) => {
+      if (url.startsWith('https://api.themoviedb.org/')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ results: [] }),
+        });
+      }
+      if (url.startsWith('https://itunes.apple.com/search')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            results: [{ collectionName: 'Limetown', artworkUrl600: artwork }],
+          }),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          fields: {
+            name: { stringValue: 'Favourite podcasts' },
+            userName: { stringValue: 'Sam' },
+            items: {
+              arrayValue: {
+                values: [
+                  {
+                    mapValue: {
+                      fields: { name: { stringValue: 'Limetown' } },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        }),
+      });
+    }) as never;
+
+    const result = await getServerSideProps({
+      params: { id: 'podcasts' },
+    } as never);
+    const initialSeo = (
+      result as {
+        props: {
+          initialSeo: { openGraph: { images: Array<{ url: string }> } };
+        };
+      }
+    ).props.initialSeo;
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('media=podcast&entity=podcast&limit=5')
+    );
+    expect(initialSeo.openGraph.images[0].url).toBe(artwork);
+  });
 });

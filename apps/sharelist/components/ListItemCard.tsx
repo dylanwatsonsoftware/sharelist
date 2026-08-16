@@ -12,6 +12,11 @@ import useSWR from 'swr';
 import { useSignedIn } from '../firebase/auth';
 import { remove, update } from '../firebase/collections';
 import fetcher from '../libs/fetcher';
+import {
+  getPodcastArtwork,
+  PodcastSearchResult,
+  podcastSearchUrl,
+} from '../libs/imageSearch';
 import { GameResult } from '../models/GameResult';
 import { List, ListItem } from '../models/list';
 import { MovieDBResult } from '../models/MovieDBResults';
@@ -51,12 +56,11 @@ const useImage = (list: List, item: ListItem) => {
     () => boardGameAtlasUrl(item.name),
     fetcher
   );
-
   const firstResult = !error && data?.results?.[0];
   const firstGame = !gameResult.error && gameResult.data?.games?.[0];
   const name = firstResult?.name || firstResult?.title;
 
-  const image =
+  const catalogImage =
     firstResult &&
     name?.toLowerCase().includes(item.name.toLowerCase()) &&
     firstResult?.vote_count > 400
@@ -64,6 +68,15 @@ const useImage = (list: List, item: ListItem) => {
       : firstGame?.name?.toLowerCase().includes(item.name.toLowerCase())
       ? firstGame?.images?.small
       : undefined;
+  const catalogSearchComplete =
+    (data !== undefined || error) &&
+    (gameResult.data !== undefined || gameResult.error);
+  const podcastResult = useSWR<PodcastSearchResult>(
+    catalogSearchComplete && !catalogImage ? podcastSearchUrl(item.name) : null,
+    fetcher
+  );
+  const image =
+    catalogImage || getPodcastArtwork(podcastResult.data, item.name);
 
   return { image };
 };

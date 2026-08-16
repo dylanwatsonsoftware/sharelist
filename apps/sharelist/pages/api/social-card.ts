@@ -50,9 +50,13 @@ export function getCollageLayout(imageCount: number): CollagePosition[] {
   ];
 }
 
-function validateImageUrl(value: string): URL {
+export function validateImageUrl(value: string): URL {
   const url = new URL(value);
-  if (url.protocol !== 'https:' || !allowedImageHosts.has(url.hostname)) {
+  const isAppleArtwork = /^is\d+-ssl\.mzstatic\.com$/.test(url.hostname);
+  if (
+    url.protocol !== 'https:' ||
+    (!allowedImageHosts.has(url.hostname) && !isAppleArtwork)
+  ) {
     throw new Error('Unsupported image URL');
   }
   return url;
