@@ -47,6 +47,15 @@ export function ShareButton({ listId, listName }: ShareButtonProps) {
         ? 'https://share-list.vercel.app'
         : window.location.origin;
     const url = `${origin}/list/${encodeURIComponent(listId)}`;
+    const copyResult = navigator.clipboard
+      ?.writeText(url)
+      .then(() => true)
+      .catch(() => false);
+
+    const showCopiedConfirmation = () => {
+      setCopied(true);
+      confirmationTimer.current = setTimeout(() => setCopied(false), 2500);
+    };
 
     if (navigator.share) {
       try {
@@ -58,14 +67,13 @@ export function ShareButton({ listId, listName }: ShareButtonProps) {
       } catch (error) {
         // Closing the native share popup is not an error the page needs to show.
       }
+      if (await copyResult) showCopiedConfirmation();
       return;
     }
 
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      confirmationTimer.current = setTimeout(() => setCopied(false), 2500);
-    } catch (error) {
+    if (await copyResult) {
+      showCopiedConfirmation();
+    } else {
       window.prompt('Copy this ShareList link:', url);
     }
   };

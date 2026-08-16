@@ -8,6 +8,11 @@ describe('ShareButton', () => {
   });
 
   it('opens the native share popup when it is available', async () => {
+    const writeText = jest.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
     const share = jest.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'share', {
       configurable: true,
@@ -20,11 +25,17 @@ describe('ShareButton', () => {
     );
 
     await waitFor(() =>
+      expect(writeText).toHaveBeenCalledWith('http://localhost/list/birthday')
+    );
+    await waitFor(() =>
       expect(share).toHaveBeenCalledWith({
         title: 'Birthday ideas | ShareList',
         text: 'Take a look at Birthday ideas on ShareList',
         url: 'http://localhost/list/birthday',
       })
+    );
+    expect(writeText.mock.invocationCallOrder[0]).toBeLessThan(
+      share.mock.invocationCallOrder[0]
     );
   });
 
