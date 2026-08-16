@@ -1,8 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import {
-  GameSearchResult,
-  getGameArtwork,
-} from '../../libs/imageSearch';
+import { fetchRawgImage } from '../../libs/rawg';
 
 export default async function gameImage(
   request: NextApiRequest,
@@ -18,17 +15,7 @@ export default async function gameImage(
   }
 
   try {
-    const rawgResponse = await fetch(
-      `https://api.rawg.io/api/games?key=${encodeURIComponent(
-        process.env.RAWG_API_KEY
-      )}&search=${encodeURIComponent(name)}&page_size=5`
-    );
-    if (!rawgResponse.ok) throw new Error('RAWG request failed');
-
-    const image = getGameArtwork(
-      (await rawgResponse.json()) as GameSearchResult,
-      name
-    );
+    const image = await fetchRawgImage(name, process.env.RAWG_API_KEY);
     response.setHeader('Cache-Control', 's-maxage=604800, stale-while-revalidate');
     response.status(200).json({ image: image || null });
   } catch (error) {

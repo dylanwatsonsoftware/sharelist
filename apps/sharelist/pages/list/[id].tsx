@@ -7,14 +7,13 @@ import ListCard from '../../components/ListCard';
 import { config } from '../../config';
 import { listCollection } from '../../firebase/collections';
 import {
-  GameSearchResult,
-  getGameArtwork,
   getMovieArtwork,
   getPodcastArtwork,
   MovieSearchResult,
   PodcastSearchResult,
   podcastSearchUrl,
 } from '../../libs/imageSearch';
+import { fetchRawgImage } from '../../libs/rawg';
 import { List as ListModel } from '../../models/list';
 
 type SocialList = Pick<ListModel, 'name' | 'userName' | 'items'>;
@@ -64,14 +63,7 @@ async function getPodcastImage(name: string): Promise<string | undefined> {
 
 async function getGameImage(name: string): Promise<string | undefined> {
   if (!process.env.RAWG_API_KEY) return undefined;
-  const response = await fetch(
-    `https://api.rawg.io/api/games?key=${encodeURIComponent(
-      process.env.RAWG_API_KEY
-    )}&search=${encodeURIComponent(name)}&page_size=5`
-  );
-  if (!response.ok) return undefined;
-
-  return getGameArtwork((await response.json()) as GameSearchResult, name);
+  return fetchRawgImage(name, process.env.RAWG_API_KEY);
 }
 
 async function getItemImage(name: string): Promise<string | undefined> {
