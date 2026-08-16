@@ -51,7 +51,11 @@ const ListCard = ({
           <h4>{list.userName}&apos;s</h4>
         </A>
       </Link>
-      <h2>{list.name}</h2>
+      <Link href={`/list/${list.id}`} passHref>
+        <A>
+          <h2>{list.name}</h2>
+        </A>
+      </Link>
       {list.items
         .filter((a) => !list.hideCompleted || !a.checked)
         .sort((a, b) =>
@@ -99,7 +103,9 @@ const ListCard = ({
         <Button
           title="Hide completed"
           style={{ marginLeft: 'auto', background: 'none' }}
-          onClick={() => updateList(list, { hideCompleted: !list.hideCompleted })}
+          onClick={() =>
+            updateList(list, { hideCompleted: !list.hideCompleted })
+          }
         >
           <span style={{ paddingRight: '10px' }}>Hide completed</span>
           {list.hideCompleted ? (
@@ -108,7 +114,7 @@ const ListCard = ({
             <RiCheckboxBlankCircleLine />
           )}
         </Button>
-      )}      
+      )}
       <AddItem list={list} />
     </div>
   );
