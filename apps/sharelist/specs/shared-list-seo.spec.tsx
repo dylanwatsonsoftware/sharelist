@@ -62,13 +62,13 @@ describe('shared list social metadata', () => {
 
     expect(NextSeo).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: "Sam's Birthday ideas | ShareList",
+        title: 'Birthday ideas by Sam | ShareList',
         description: "Sam's Birthday ideas list: Board game, A good book",
         canonical: 'https://share-list.vercel.app/list/birthday',
         openGraph: {
           type: 'website',
           url: 'https://share-list.vercel.app/list/birthday',
-          title: "Sam's Birthday ideas | ShareList",
+          title: 'Birthday ideas by Sam | ShareList',
           description: "Sam's Birthday ideas list: Board game, A good book",
           site_name: 'ShareList',
           images: [
@@ -194,7 +194,7 @@ describe('shared list social metadata', () => {
     const head = new ActualNextSeo(initialSeo).render();
     const initialHtml = renderToStaticMarkup(<>{head.props.children}</>);
 
-    expect(initialHtml).toContain('Sam&#x27;s Birthday ideas | ShareList');
+    expect(initialHtml).toContain('Birthday ideas by Sam | ShareList');
     expect(initialHtml).toContain('Sam&#x27;s Birthday ideas list: Board game');
     expect(initialHtml).toContain(
       'rel="canonical" href="https://share-list.vercel.app/list/birthday"'

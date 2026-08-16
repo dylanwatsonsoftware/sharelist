@@ -124,7 +124,7 @@ export function getDefaultListSeo(sharedId: string) {
 }
 
 export function getListSeo(list: SocialList, sharedId: string) {
-  const title = `${list.userName}'s ${list.name} | ShareList`;
+  const title = `${list.name} by ${list.userName} | ShareList`;
   const itemNames = list.items
     .slice(0, 3)
     .map((item) => item.name)
