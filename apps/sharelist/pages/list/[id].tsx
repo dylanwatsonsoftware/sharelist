@@ -1,4 +1,5 @@
 import { NextSeo } from 'next-seo';
+import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
@@ -6,6 +7,13 @@ import ListCard from '../../components/ListCard';
 import { config } from '../../config';
 import { listCollection } from '../../firebase/collections';
 import { List as ListModel } from '../../models/list';
+
+type SocialList = Pick<ListModel, 'name' | 'userName' | 'items'>;
+type ListSeo = ReturnType<typeof getListSeo>;
+
+interface ListPageProps {
+  initialSeo?: ListSeo;
+}
 
 const siteUrl = 'https://share-list.vercel.app';
 const defaultSocialImage = `${siteUrl}/_next/image?url=%2Fsharelist.png&w=1200&q=75`;
@@ -35,7 +43,7 @@ export function getDefaultListSeo(sharedId: string) {
   };
 }
 
-export function getListSeo(list: ListModel, sharedId: string) {
+export function getListSeo(list: SocialList, sharedId: string) {
   const title = `${list.userName}'s ${list.name} | ShareList`;
   const itemNames = list.items
     .slice(0, 3)
@@ -76,7 +84,7 @@ export function getListSeo(list: ListModel, sharedId: string) {
   };
 }
 
-export function List() {
+export function List({ initialSeo }: ListPageProps = {}) {
   const { query } = useRouter();
 
   const sharedId = query.id as string;
@@ -92,7 +100,9 @@ export function List() {
   return (
     <>
       <NextSeo
-        {...(list ? getListSeo(list, sharedId) : getDefaultListSeo(sharedId))}
+        {...(list
+          ? getListSeo(list, sharedId)
+          : initialSeo || getDefaultListSeo(sharedId))}
       />
       {error ? (
         <strong>Error: {JSON.stringify(error)}</strong>
@@ -114,5 +124,22 @@ export function List() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<ListPageProps> = async ({
+  params,
+}) => {
+  const sharedId = String(params?.id || '');
+  const id = config.paths[sharedId] || sharedId;
+
+  try {
+    const snapshot = await listCollection.doc(id).get();
+    if (!snapshot.exists) return { notFound: true };
+
+    const list = snapshot.data() as SocialList;
+    return { props: { initialSeo: getListSeo(list, sharedId) } };
+  } catch (error) {
+    return { props: { initialSeo: getDefaultListSeo(sharedId) } };
+  }
+};
 
 export default List;

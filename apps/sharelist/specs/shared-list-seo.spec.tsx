@@ -3,7 +3,8 @@ import { render } from '@testing-library/react';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import SharedListPage from '../pages/list/[id]';
+import { listCollection } from '../firebase/collections';
+import SharedListPage, { getServerSideProps } from '../pages/list/[id]';
 
 jest.mock('next-seo', () => ({
   NextSeo: jest.fn(() => null),
@@ -13,6 +14,9 @@ jest.mock('next/router', () => ({
 }));
 jest.mock('react-firebase-hooks/firestore', () => ({
   useDocumentData: jest.fn(),
+}));
+jest.mock('../firebase/collections', () => ({
+  listCollection: { doc: jest.fn() },
 }));
 jest.mock('../components/ListCard', () => () => null);
 
@@ -103,5 +107,43 @@ describe('shared list social metadata', () => {
       }),
       expect.anything()
     );
+  });
+
+  it('loads list metadata on the server for social crawlers', async () => {
+    const list = {
+      name: 'Birthday ideas',
+      userName: 'Sam',
+      items: [
+        {
+          name: 'Board game',
+          image: 'https://d2k4q26owzy373.cloudfront.net/game.jpg',
+        },
+      ],
+    };
+    const get = jest.fn().mockResolvedValue({ exists: true, data: () => list });
+    (listCollection.doc as jest.Mock).mockReturnValue({ get });
+
+    const result = await getServerSideProps({
+      params: { id: 'birthday' },
+    } as never);
+
+    expect(listCollection.doc).toHaveBeenCalledWith('birthday');
+    expect(result).toEqual({
+      props: {
+        initialSeo: expect.objectContaining({
+          title: "Sam's Birthday ideas | ShareList",
+          canonical: 'https://share-list.vercel.app/list/birthday',
+          openGraph: expect.objectContaining({
+            title: "Sam's Birthday ideas | ShareList",
+            images: [
+              {
+                url: 'https://d2k4q26owzy373.cloudfront.net/game.jpg',
+                alt: 'Birthday ideas',
+              },
+            ],
+          }),
+        }),
+      },
+    });
   });
 });
