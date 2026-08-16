@@ -53,12 +53,12 @@ interface GameImageResponse {
 
 const useImage = (list: List, item: ListItem) => {
   const { data, error } = useSWR<MovieDBResult>(
-    () => movieDbUrl(item.name),
+    item.image ? null : () => movieDbUrl(item.name),
     fetcher
   );
 
   const gameResult = useSWR<GameResult>(
-    () => boardGameAtlasUrl(item.name),
+    item.image ? null : () => boardGameAtlasUrl(item.name),
     fetcher
   );
   const firstGame = !gameResult.error && gameResult.data?.games?.[0];
@@ -66,7 +66,9 @@ const useImage = (list: List, item: ListItem) => {
     ? getMovieArtwork(data, item.name, 'w92')
     : undefined;
   const rawgResult = useSWR<GameImageResponse>(
-    () => `/api/game-image?name=${encodeURIComponent(item.name)}`,
+    item.image
+      ? null
+      : () => `/api/game-image?name=${encodeURIComponent(item.name)}`,
     fetcher
   );
 
@@ -85,7 +87,9 @@ const useImage = (list: List, item: ListItem) => {
     fetcher
   );
   const image =
-    catalogImage || getPodcastArtwork(podcastResult.data, item.name);
+    item.image ||
+    catalogImage ||
+    getPodcastArtwork(podcastResult.data, item.name);
 
   return { image };
 };
@@ -122,7 +126,7 @@ const ListItemCard = ({ item, list }: { item: ListItem; list: List }) => {
         </ImageHolder>
       )}
       <a
-        href={`https://www.google.com/search?q=${item.name}`}
+        href={item.url || `https://www.google.com/search?q=${item.name}`}
         target="_blank"
         rel="noreferrer"
       >

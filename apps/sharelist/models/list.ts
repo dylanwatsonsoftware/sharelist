@@ -19,5 +19,7 @@ export interface ListItem {
 
   url?: string;
   image?: string;
+  source?: string;
+  externalId?: string;
   checked?: boolean;
 }
