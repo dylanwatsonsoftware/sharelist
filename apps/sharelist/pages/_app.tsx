@@ -58,6 +58,9 @@ function CustomApp({ Component, pageProps }: AppProps) {
                   {process.env.NEXT_PUBLIC_BUILD_DATE}
                 </p>
                 <p>{process.env.NEXT_PUBLIC_BUILD_SUMMARY}</p>
+                <p>
+                  <a href="https://rawg.io/">Game images by RAWG</a>
+                </p>
               </footer>
             </div>
           </div>

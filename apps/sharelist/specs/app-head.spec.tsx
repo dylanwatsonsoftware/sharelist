@@ -45,5 +45,8 @@ describe('application head', () => {
 
     expect(screen.getByText('Version abc1234 · 16 Aug 2026')).toBeTruthy();
     expect(screen.getByText('Improve social cards')).toBeTruthy();
+    expect(
+      screen.getByText('Game images by RAWG').closest('a')?.getAttribute('href')
+    ).toBe('https://rawg.io/');
   });
 });
