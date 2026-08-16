@@ -13,6 +13,7 @@ import { useSignedIn } from '../firebase/auth';
 import { remove, update } from '../firebase/collections';
 import fetcher from '../libs/fetcher';
 import {
+  getMovieArtwork,
   getPodcastArtwork,
   PodcastSearchResult,
   podcastSearchUrl,
@@ -56,18 +57,16 @@ const useImage = (list: List, item: ListItem) => {
     () => boardGameAtlasUrl(item.name),
     fetcher
   );
-  const firstResult = !error && data?.results?.[0];
   const firstGame = !gameResult.error && gameResult.data?.games?.[0];
-  const name = firstResult?.name || firstResult?.title;
+  const movieImage = !error
+    ? getMovieArtwork(data, item.name, 'w92')
+    : undefined;
 
   const catalogImage =
-    firstResult &&
-    name?.toLowerCase().includes(item.name.toLowerCase()) &&
-    firstResult?.vote_count > 400
-      ? 'https://image.tmdb.org/t/p/w92/' + firstResult?.poster_path
-      : firstGame?.name?.toLowerCase().includes(item.name.toLowerCase())
+    movieImage ||
+    (firstGame?.name?.toLowerCase().includes(item.name.toLowerCase())
       ? firstGame?.images?.small
-      : undefined;
+      : undefined);
   const catalogSearchComplete =
     (data !== undefined || error) &&
     (gameResult.data !== undefined || gameResult.error);

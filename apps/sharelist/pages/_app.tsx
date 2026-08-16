@@ -52,6 +52,13 @@ function CustomApp({ Component, pageProps }: AppProps) {
                   @dylanwatsonsoftware
                 </a>
               </p>
+              <footer id="build-info">
+                <p>
+                  Version {process.env.NEXT_PUBLIC_BUILD_VERSION} ·{' '}
+                  {process.env.NEXT_PUBLIC_BUILD_DATE}
+                </p>
+                <p>{process.env.NEXT_PUBLIC_BUILD_SUMMARY}</p>
+              </footer>
             </div>
           </div>
         </StyledPage>

@@ -1,4 +1,8 @@
-import { getPodcastArtwork, podcastSearchUrl } from '../libs/imageSearch';
+import {
+  getMovieArtwork,
+  getPodcastArtwork,
+  podcastSearchUrl,
+} from '../libs/imageSearch';
 
 const nextConfig = require('../next.config');
 
@@ -13,6 +17,25 @@ describe('podcast artwork search', () => {
         'is5-ssl.mzstatic.com',
       ])
     );
+  });
+
+  it('selects a matching movie or TV poster beyond the first result', () => {
+    expect(
+      getMovieArtwork(
+        {
+          results: [
+            { title: 'Unrelated title', poster_path: '/unrelated.jpg' },
+            {
+              name: 'The Last of Us',
+              poster_path: '/the-last-of-us.jpg',
+              vote_count: 12,
+            },
+          ],
+        },
+        'The Last of Us',
+        'w500'
+      )
+    ).toBe('https://image.tmdb.org/t/p/w500/the-last-of-us.jpg');
   });
 
   it('builds an Apple Podcasts search and selects matching high-resolution artwork', () => {

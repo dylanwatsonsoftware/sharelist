@@ -7,7 +7,9 @@ import ListCard from '../../components/ListCard';
 import { config } from '../../config';
 import { listCollection } from '../../firebase/collections';
 import {
+  getMovieArtwork,
   getPodcastArtwork,
+  MovieSearchResult,
   PodcastSearchResult,
   podcastSearchUrl,
 } from '../../libs/imageSearch';
@@ -41,26 +43,11 @@ async function getMovieImage(name: string): Promise<string | undefined> {
   );
   if (!response.ok) return undefined;
 
-  const result = (await response.json()) as {
-    results?: Array<{
-      name?: string;
-      title?: string;
-      vote_count?: number;
-      poster_path?: string;
-    }>;
-  };
-  const firstResult = result.results?.[0];
-  const resultName = firstResult?.name || firstResult?.title;
-
-  if (
-    !firstResult?.poster_path ||
-    !resultName?.toLowerCase().includes(name.toLowerCase()) ||
-    (firstResult.vote_count || 0) <= 400
-  ) {
-    return undefined;
-  }
-
-  return `https://image.tmdb.org/t/p/w500${firstResult.poster_path}`;
+  return getMovieArtwork(
+    (await response.json()) as MovieSearchResult,
+    name,
+    'w500'
+  );
 }
 
 async function getPodcastImage(name: string): Promise<string | undefined> {
