@@ -20,4 +20,21 @@ describe('suggestion aggregation', () => {
     expect(result).toHaveLength(8);
     expect(result.filter((item) => item.name === 'The Matrix')).toHaveLength(1);
   });
+
+  it('interleaves providers so one catalog cannot hide every other source', () => {
+    const groups = (
+      ['tmdb', 'apple', 'rawg', 'boardgameatlas'] as const
+    ).map((source) =>
+      Array.from({ length: 4 }, (_, index) => ({
+        id: `${source}:${index}`,
+        name: `${source} ${index}`,
+        subtitle: source,
+        source,
+      }))
+    );
+
+    expect(new Set(mergeSuggestions(groups).map((item) => item.source))).toEqual(
+      new Set(['tmdb', 'apple', 'rawg', 'boardgameatlas'])
+    );
+  });
 });

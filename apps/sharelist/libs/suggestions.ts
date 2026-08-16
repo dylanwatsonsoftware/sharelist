@@ -5,17 +5,23 @@ const normalized = (value: string) =>
 
 export function mergeSuggestions(groups: Suggestion[][]): Suggestion[] {
   const seen = new Set<string>();
-  return groups
-    .flat()
-    .filter((suggestion) => {
+  const merged: Suggestion[] = [];
+  const maxGroupSize = Math.max(0, ...groups.map((group) => group.length));
+
+  for (let index = 0; index < maxGroupSize && merged.length < 8; index += 1) {
+    groups.forEach((group) => {
+      const suggestion = group[index];
+      if (!suggestion || merged.length >= 8) return;
       const key = `${normalized(suggestion.name)}:${suggestion.subtitle
         .split(' · ')[0]
         .toLowerCase()}`;
-      if (seen.has(key)) return false;
+      if (seen.has(key)) return;
       seen.add(key);
-      return true;
-    })
-    .slice(0, 8);
+      merged.push(suggestion);
+    });
+  }
+
+  return merged;
 }
 
 export async function fetchJson<T>(
