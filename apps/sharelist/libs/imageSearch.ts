@@ -15,6 +15,13 @@ export interface MovieSearchResult {
   }>;
 }
 
+export interface GameSearchResult {
+  results?: Array<{
+    name?: string;
+    background_image?: string;
+  }>;
+}
+
 export const podcastSearchUrl = (name: string) =>
   `https://itunes.apple.com/search?term=${encodeURIComponent(
     name
@@ -22,6 +29,18 @@ export const podcastSearchUrl = (name: string) =>
 
 const normalizeName = (name: string) =>
   name.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+export function getGameArtwork(
+  result: GameSearchResult | undefined,
+  itemName: string
+): string | undefined {
+  const normalizedItemName = normalizeName(itemName);
+  return result?.results?.find(
+    (candidate) =>
+      candidate.background_image &&
+      normalizeName(candidate.name || '') === normalizedItemName
+  )?.background_image;
+}
 
 export function getMovieArtwork(
   result: MovieSearchResult | undefined,

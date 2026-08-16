@@ -13,6 +13,7 @@ const shareListLogo = Buffer.from(
 const allowedImageHosts = new Set([
   'd2k4q26owzy373.cloudfront.net',
   'image.tmdb.org',
+  'media.rawg.io',
 ]);
 
 interface CollagePosition {

@@ -47,6 +47,10 @@ const movieDbUrl = (name: string) =>
     name
   )}&page=1`;
 
+interface GameImageResponse {
+  image?: string;
+}
+
 const useImage = (list: List, item: ListItem) => {
   const { data, error } = useSWR<MovieDBResult>(
     () => movieDbUrl(item.name),
@@ -61,15 +65,21 @@ const useImage = (list: List, item: ListItem) => {
   const movieImage = !error
     ? getMovieArtwork(data, item.name, 'w92')
     : undefined;
+  const rawgResult = useSWR<GameImageResponse>(
+    () => `/api/game-image?name=${encodeURIComponent(item.name)}`,
+    fetcher
+  );
 
   const catalogImage =
     movieImage ||
+    rawgResult.data?.image ||
     (firstGame?.name?.toLowerCase().includes(item.name.toLowerCase())
       ? firstGame?.images?.small
       : undefined);
   const catalogSearchComplete =
     (data !== undefined || error) &&
-    (gameResult.data !== undefined || gameResult.error);
+    (gameResult.data !== undefined || gameResult.error) &&
+    (rawgResult.data !== undefined || rawgResult.error);
   const podcastResult = useSWR<PodcastSearchResult>(
     catalogSearchComplete && !catalogImage ? podcastSearchUrl(item.name) : null,
     fetcher

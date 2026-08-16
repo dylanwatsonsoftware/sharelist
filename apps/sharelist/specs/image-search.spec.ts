@@ -1,4 +1,5 @@
 import {
+  getGameArtwork,
   getMovieArtwork,
   getPodcastArtwork,
   podcastSearchUrl,
@@ -7,6 +8,23 @@ import {
 const nextConfig = require('../next.config');
 
 describe('podcast artwork search', () => {
+  it('selects an exact RAWG game result instead of an unrelated first result', () => {
+    expect(
+      getGameArtwork(
+        {
+          results: [
+            { name: 'Super Mario Party', background_image: 'wrong.jpg' },
+            {
+              name: 'Super Mario Bros. Wonder',
+              background_image: 'https://media.rawg.io/media/games/wonder.jpg',
+            },
+          ],
+        },
+        'Super Mario Bros Wonder'
+      )
+    ).toBe('https://media.rawg.io/media/games/wonder.jpg');
+  });
+
   it('allows Apple artwork hosts through the Next.js image optimizer', () => {
     expect(nextConfig.images.domains).toEqual(
       expect.arrayContaining([

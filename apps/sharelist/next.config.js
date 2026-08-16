@@ -28,6 +28,7 @@ const nextConfig = {
     domains: [
       'image.tmdb.org',
       'd2k4q26owzy373.cloudfront.net',
+      'media.rawg.io',
       'is1-ssl.mzstatic.com',
       'is2-ssl.mzstatic.com',
       'is3-ssl.mzstatic.com',
