@@ -1,41 +1,184 @@
 import { NextSeo } from 'next-seo';
+import { GetServerSideProps } from 'next';
 import Link from 'next/link';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import ListCard from '../../components/ListCard';
 import { config } from '../../config';
 import { listCollection } from '../../firebase/collections';
-import { List } from '../../models/list';
+import { List as ListModel } from '../../models/list';
 
-export function List() {
+type SocialList = Pick<ListModel, 'name' | 'userName' | 'items'>;
+type ListSeo = ReturnType<typeof getListSeo>;
+
+interface ListPageProps {
+  initialSeo?: ListSeo;
+}
+
+interface FirestoreValue {
+  stringValue?: string;
+  arrayValue?: { values?: FirestoreValue[] };
+  mapValue?: { fields?: Record<string, FirestoreValue> };
+}
+
+interface FirestoreDocument {
+  fields?: Record<string, FirestoreValue>;
+}
+
+const siteUrl = 'https://share-list.vercel.app';
+const defaultSocialImage = `${siteUrl}/_next/image?url=%2Fsharelist.png&w=1200&q=75`;
+
+async function getServerList(id: string): Promise<SocialList | undefined> {
+  const projectId = encodeURIComponent(config.firebase.projectId);
+  const documentId = encodeURIComponent(id);
+  const apiKey = encodeURIComponent(config.firebase.apiKey);
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/lists/${documentId}?key=${apiKey}`
+  );
+
+  if (response.status === 404) return undefined;
+  if (!response.ok) throw new Error(`Firestore returned ${response.status}`);
+
+  const document = (await response.json()) as FirestoreDocument;
+  const fields = document.fields || {};
+  const items = (fields.items?.arrayValue?.values || [])
+    .map((value) => value.mapValue?.fields || {})
+    .map((item) => ({
+      name: item.name?.stringValue || '',
+      image: item.image?.stringValue,
+    }))
+    .filter((item) => item.name);
+
+  return {
+    name: fields.name?.stringValue || '',
+    userName: fields.userName?.stringValue || '',
+    items,
+  };
+}
+
+export function getDefaultListSeo(sharedId: string) {
+  const title = 'Shared list | ShareList';
+  const description = 'View this shared list on ShareList';
+  const url = `${siteUrl}/list/${encodeURIComponent(sharedId || '')}`;
+
+  return {
+    title,
+    description,
+    canonical: url,
+    openGraph: {
+      type: 'website',
+      url,
+      title,
+      description,
+      site_name: 'ShareList',
+      images: [{ url: defaultSocialImage, alt: 'ShareList' }],
+    },
+    twitter: {
+      cardType: 'summary_large_image',
+      handle: '@dylanwatsonsw',
+      site: '@dylanwatsonsw',
+    },
+  };
+}
+
+export function getListSeo(list: SocialList, sharedId: string) {
+  const title = `${list.userName}'s ${list.name} | ShareList`;
+  const itemNames = list.items
+    .slice(0, 3)
+    .map((item) => item.name)
+    .join(', ');
+  const description = itemNames
+    ? `${list.userName}'s ${list.name} list: ${itemNames}`
+    : `${list.userName}'s ${list.name} list on ShareList`;
+  const url = `${siteUrl}/list/${encodeURIComponent(sharedId)}`;
+  const itemImages = list.items
+    .map((item) => item.image)
+    .filter((image): image is string => !!image)
+    .slice(0, 4);
+  const image =
+    itemImages.length > 1
+      ? `${siteUrl}/api/social-card?${itemImages
+          .map((url) => `image=${encodeURIComponent(url)}`)
+          .join('&')}`
+      : itemImages[0] || defaultSocialImage;
+
+  return {
+    title,
+    description,
+    canonical: url,
+    openGraph: {
+      type: 'website',
+      url,
+      title,
+      description,
+      site_name: 'ShareList',
+      images: [{ url: image, alt: list.name }],
+    },
+    twitter: {
+      cardType: 'summary_large_image',
+      handle: '@dylanwatsonsw',
+      site: '@dylanwatsonsw',
+    },
+  };
+}
+
+export function List({ initialSeo }: ListPageProps = {}) {
   const { query } = useRouter();
 
-  const id = config.paths[query.id as string] || (query.id as string);
+  const sharedId = query.id as string;
+  const id = config.paths[sharedId] || sharedId;
 
-  const [list, loading, error] = useDocumentData<List>(listCollection.doc(id), {
-    idField: 'id',
-  });
-  if (error) return <strong>Error: {JSON.stringify(error)}</strong>;
-  if (loading || !list) return <span>Loading...</span>;
+  const [list, loading, error] = useDocumentData<ListModel>(
+    listCollection.doc(id),
+    {
+      idField: 'id',
+    }
+  );
 
   return (
     <>
-      <Head>
-        <title>{'ShareList - ' + list.name}</title>
-      </Head>
-      <NextSeo title={'ShareList - ' + list.name}></NextSeo>
-      <div style={{ display: 'flex' }}>
-        <Link href="/">
-          <a className="list-item-link">My Lists</a>
-        </Link>
-        <Link href="/friends">
-          <a className="list-item-link">Friends Lists</a>
-        </Link>
-      </div>
-      <ListCard list={list} onlyListShown={true}></ListCard>
+      <NextSeo
+        {...(list
+          ? getListSeo(list, sharedId)
+          : initialSeo || getDefaultListSeo(sharedId))}
+      />
+      {error ? (
+        <strong>Error: {JSON.stringify(error)}</strong>
+      ) : loading ? (
+        <span>Loading...</span>
+      ) : !list ? (
+        <span>List not found</span>
+      ) : (
+        <>
+          <div style={{ display: 'flex' }}>
+            <Link href="/">
+              <a className="list-item-link">My Lists</a>
+            </Link>
+            <Link href="/friends">
+              <a className="list-item-link">Friends Lists</a>
+            </Link>
+          </div>
+          <ListCard list={list} onlyListShown={true}></ListCard>
+        </>
+      )}
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<ListPageProps> = async ({
+  params,
+}) => {
+  const sharedId = String(params?.id || '');
+  const id = config.paths[sharedId] || sharedId;
+
+  try {
+    const list = await getServerList(id);
+    if (!list) return { notFound: true };
+
+    return { props: { initialSeo: getListSeo(list, sharedId) } };
+  } catch (error) {
+    return { props: { initialSeo: getDefaultListSeo(sharedId) } };
+  }
+};
 
 export default List;

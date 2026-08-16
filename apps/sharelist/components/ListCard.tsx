@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { useState } from 'react';
-import { BsShareFill } from 'react-icons/bs';
 import {
   RiCheckboxBlankCircleLine,
   RiCheckboxCircleLine,
@@ -11,10 +10,7 @@ import { updateList } from '../firebase/collections';
 import { List } from '../models/list';
 import AddItem from './AddItem';
 import ListItemCard from './ListItemCard';
-
-const Share = styled.span`
-  float: right;
-`;
+import ShareButton from './ShareButton';
 
 const A = styled.a`
   cursor: pointer;
@@ -49,13 +45,7 @@ const ListCard = ({
 
   return (
     <div className="rounded shadow listcard">
-      <Share>
-        <Link href={`/list/${list.id}`} passHref>
-          <a>
-            <BsShareFill />
-          </a>
-        </Link>
-      </Share>
+      <ShareButton listId={list.id} listName={list.name} />
       <Link href={`/user/${list.userId}`} passHref>
         <A>
           <h4>{list.userName}&apos;s</h4>
