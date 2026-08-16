@@ -26,7 +26,7 @@ interface FirestoreDocument {
 }
 
 const siteUrl = 'https://share-list.vercel.app';
-const defaultSocialImage = `${siteUrl}/api/social-card?v=2`;
+const defaultSocialImage = `${siteUrl}/api/social-card?v=3`;
 
 async function getMovieImage(name: string): Promise<string | undefined> {
   const response = await fetch(

@@ -24,29 +24,29 @@ interface CollagePosition {
 
 export function getCollageLayout(imageCount: number): CollagePosition[] {
   if (imageCount <= 1) {
-    return [{ width: cardWidth, height: cardHeight, left: 0, top: 0 }];
+    return [{ width: 1128, height: 456, left: 36, top: 36 }];
   }
 
   if (imageCount === 2) {
     return [
-      { width: 600, height: cardHeight, left: 0, top: 0 },
-      { width: 600, height: cardHeight, left: 600, top: 0 },
+      { width: 558, height: 456, left: 36, top: 36 },
+      { width: 558, height: 456, left: 606, top: 36 },
     ];
   }
 
   if (imageCount === 3) {
     return [
-      { width: 600, height: cardHeight, left: 0, top: 0 },
-      { width: 600, height: 315, left: 600, top: 0 },
-      { width: 600, height: 315, left: 600, top: 315 },
+      { width: 558, height: 456, left: 36, top: 36 },
+      { width: 558, height: 222, left: 606, top: 36 },
+      { width: 558, height: 222, left: 606, top: 270 },
     ];
   }
 
   return [
-    { width: 600, height: 315, left: 0, top: 0 },
-    { width: 600, height: 315, left: 600, top: 0 },
-    { width: 600, height: 315, left: 0, top: 315 },
-    { width: 600, height: 315, left: 600, top: 315 },
+    { width: 558, height: 222, left: 36, top: 36 },
+    { width: 558, height: 222, left: 606, top: 36 },
+    { width: 558, height: 222, left: 36, top: 270 },
+    { width: 558, height: 222, left: 606, top: 270 },
   ];
 }
 
@@ -130,27 +130,45 @@ export async function createSocialCard(images: Buffer[]): Promise<Buffer> {
   const tiles = await Promise.all(
     images.map((image, index) => {
       const position = positions[index];
+      const roundedMask = Buffer.from(`
+        <svg width="${position.width}" height="${position.height}" xmlns="http://www.w3.org/2000/svg">
+          <rect width="${position.width}" height="${position.height}" rx="24" fill="#ffffff"/>
+        </svg>
+      `);
       return sharp(image)
         .resize(position.width, position.height, { fit: 'cover' })
-        .jpeg({ quality: 84 })
+        .composite([{ input: roundedMask, blend: 'dest-in' }])
+        .png()
         .toBuffer();
     })
   );
+  const logo = await sharp(shareListLogo)
+    .resize({ width: 280 })
+    .png()
+    .toBuffer();
+  const background = Buffer.from(`
+    <svg width="${cardWidth}" height="${cardHeight}" viewBox="0 0 ${cardWidth} ${cardHeight}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="background" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#0d2a44"/>
+          <stop offset="1" stop-color="#245c85"/>
+        </linearGradient>
+      </defs>
+      <rect width="${cardWidth}" height="${cardHeight}" fill="url(#background)"/>
+      <circle cx="1125" cy="590" r="180" fill="#ffffff" fill-opacity="0.035"/>
+      <path d="M1010 564h112m-26-26 26 26-26 26" fill="none" stroke="#ffffff" stroke-opacity="0.7" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `);
 
-  return sharp({
-    create: {
-      width: cardWidth,
-      height: cardHeight,
-      channels: 3,
-      background: '#f6f7fb',
-    },
-  })
+  return sharp(background)
     .composite(
-      tiles.map((input, index) => ({
-        input,
-        left: positions[index].left,
-        top: positions[index].top,
-      }))
+      tiles
+        .map((input, index) => ({
+          input,
+          left: positions[index].left,
+          top: positions[index].top,
+        }))
+        .concat([{ input: logo, left: 48, top: 521 }])
     )
     .jpeg({ quality: 86, progressive: true })
     .toBuffer();

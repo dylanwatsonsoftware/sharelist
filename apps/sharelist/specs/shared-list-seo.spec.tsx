@@ -73,7 +73,7 @@ describe('shared list social metadata', () => {
           site_name: 'ShareList',
           images: [
             {
-              url: 'https://share-list.vercel.app/api/social-card?v=2&image=https%3A%2F%2Fd2k4q26owzy373.cloudfront.net%2Fgame.jpg&image=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2Fbook.jpg',
+              url: 'https://share-list.vercel.app/api/social-card?v=3&image=https%3A%2F%2Fd2k4q26owzy373.cloudfront.net%2Fgame.jpg&image=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2Fbook.jpg',
               alt: 'Birthday ideas',
             },
           ],
@@ -106,7 +106,7 @@ describe('shared list social metadata', () => {
           url: 'https://share-list.vercel.app/list/birthday',
           images: [
             expect.objectContaining({
-              url: 'https://share-list.vercel.app/api/social-card?v=2',
+              url: 'https://share-list.vercel.app/api/social-card?v=3',
             }),
           ],
         }),
