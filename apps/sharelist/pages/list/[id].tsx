@@ -26,7 +26,7 @@ interface FirestoreDocument {
 }
 
 const siteUrl = 'https://share-list.vercel.app';
-const defaultSocialImage = `${siteUrl}/api/social-card`;
+const defaultSocialImage = `${siteUrl}/api/social-card?v=2`;
 
 async function getMovieImage(name: string): Promise<string | undefined> {
   const response = await fetch(
@@ -139,7 +139,7 @@ export function getListSeo(list: SocialList, sharedId: string) {
     .slice(0, 4);
   const image =
     itemImages.length > 1
-      ? `${siteUrl}/api/social-card?${itemImages
+      ? `${defaultSocialImage}&${itemImages
           .map((url) => `image=${encodeURIComponent(url)}`)
           .join('&')}`
       : itemImages[0] || defaultSocialImage;
