@@ -1,8 +1,10 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
+import { config } from '../config';
 import { listCollection } from '../firebase/collections';
 import SharedListPage, { getServerSideProps } from '../pages/list/[id]';
 
@@ -20,9 +22,16 @@ jest.mock('../firebase/collections', () => ({
 }));
 jest.mock('../components/ListCard', () => () => null);
 
+const originalFetch = global.fetch;
+
 describe('shared list social metadata', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    delete config.paths.birthday;
   });
 
   it('uses the shared list details for Open Graph and Twitter cards', () => {
@@ -124,40 +133,56 @@ describe('shared list social metadata', () => {
   });
 
   it('loads list metadata on the server for social crawlers', async () => {
-    const list = {
-      name: 'Birthday ideas',
-      userName: 'Sam',
-      items: [
-        {
-          name: 'Board game',
-          image: 'https://d2k4q26owzy373.cloudfront.net/game.jpg',
+    config.paths.birthday = 'birthday-document';
+    const fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        fields: {
+          name: { stringValue: 'Birthday ideas' },
+          userName: { stringValue: 'Sam' },
+          items: {
+            arrayValue: {
+              values: [
+                {
+                  mapValue: {
+                    fields: {
+                      name: { stringValue: 'Board game' },
+                      image: {
+                        stringValue:
+                          'https://d2k4q26owzy373.cloudfront.net/game.jpg',
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
         },
-      ],
-    };
-    const get = jest.fn().mockResolvedValue({ exists: true, data: () => list });
-    (listCollection.doc as jest.Mock).mockReturnValue({ get });
+      }),
+    });
+    global.fetch = fetch as never;
 
     const result = await getServerSideProps({
       params: { id: 'birthday' },
     } as never);
 
-    expect(listCollection.doc).toHaveBeenCalledWith('birthday');
-    expect(result).toEqual({
-      props: {
-        initialSeo: expect.objectContaining({
-          title: "Sam's Birthday ideas | ShareList",
-          canonical: 'https://share-list.vercel.app/list/birthday',
-          openGraph: expect.objectContaining({
-            title: "Sam's Birthday ideas | ShareList",
-            images: [
-              {
-                url: 'https://d2k4q26owzy373.cloudfront.net/game.jpg',
-                alt: 'Birthday ideas',
-              },
-            ],
-          }),
-        }),
-      },
-    });
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/documents/lists/birthday-document?key=')
+    );
+
+    const initialSeo = (result as { props: { initialSeo: object } }).props
+      .initialSeo;
+    const ActualNextSeo = jest.requireActual('next-seo').NextSeo;
+    const head = new ActualNextSeo(initialSeo).render();
+    const initialHtml = renderToStaticMarkup(<>{head.props.children}</>);
+
+    expect(initialHtml).toContain('Sam&#x27;s Birthday ideas | ShareList');
+    expect(initialHtml).toContain('Sam&#x27;s Birthday ideas list: Board game');
+    expect(initialHtml).toContain(
+      'rel="canonical" href="https://share-list.vercel.app/list/birthday"'
+    );
+    expect(initialHtml).toContain(
+      'property="og:image" content="https://d2k4q26owzy373.cloudfront.net/game.jpg"'
+    );
   });
 });

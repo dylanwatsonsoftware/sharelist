@@ -15,8 +15,46 @@ interface ListPageProps {
   initialSeo?: ListSeo;
 }
 
+interface FirestoreValue {
+  stringValue?: string;
+  arrayValue?: { values?: FirestoreValue[] };
+  mapValue?: { fields?: Record<string, FirestoreValue> };
+}
+
+interface FirestoreDocument {
+  fields?: Record<string, FirestoreValue>;
+}
+
 const siteUrl = 'https://share-list.vercel.app';
 const defaultSocialImage = `${siteUrl}/_next/image?url=%2Fsharelist.png&w=1200&q=75`;
+
+async function getServerList(id: string): Promise<SocialList | undefined> {
+  const projectId = encodeURIComponent(config.firebase.projectId);
+  const documentId = encodeURIComponent(id);
+  const apiKey = encodeURIComponent(config.firebase.apiKey);
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/lists/${documentId}?key=${apiKey}`
+  );
+
+  if (response.status === 404) return undefined;
+  if (!response.ok) throw new Error(`Firestore returned ${response.status}`);
+
+  const document = (await response.json()) as FirestoreDocument;
+  const fields = document.fields || {};
+  const items = (fields.items?.arrayValue?.values || [])
+    .map((value) => value.mapValue?.fields || {})
+    .map((item) => ({
+      name: item.name?.stringValue || '',
+      image: item.image?.stringValue,
+    }))
+    .filter((item) => item.name);
+
+  return {
+    name: fields.name?.stringValue || '',
+    userName: fields.userName?.stringValue || '',
+    items,
+  };
+}
 
 export function getDefaultListSeo(sharedId: string) {
   const title = 'Shared list | ShareList';
@@ -134,10 +172,9 @@ export const getServerSideProps: GetServerSideProps<ListPageProps> = async ({
   const id = config.paths[sharedId] || sharedId;
 
   try {
-    const snapshot = await listCollection.doc(id).get();
-    if (!snapshot.exists) return { notFound: true };
+    const list = await getServerList(id);
+    if (!list) return { notFound: true };
 
-    const list = snapshot.data() as SocialList;
     return { props: { initialSeo: getListSeo(list, sharedId) } };
   } catch (error) {
     return { props: { initialSeo: getDefaultListSeo(sharedId) } };
